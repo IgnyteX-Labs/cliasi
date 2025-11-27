@@ -74,7 +74,7 @@ def test_update_prefix_and_separator(capsys):
 
 
 def test_verbosity_filters(capsys):
-    c = Cliasi("V", use_oneline=False, colors=False, verbose_level=1)
+    c = Cliasi("V", use_oneline=False, colors=False, min_verbose_level=1)
     # According to current implementation, level > min is suppressed
     # lower or equal -> shown
     c.info("visible", verbosity=0)

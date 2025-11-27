@@ -3,17 +3,17 @@ from random import randint
 from typing import Union, Optional, Callable
 from threading import Thread, Event
 
-
 from .constants import PROGRESSBAR_LOADING, LOADING, Color, DEFAULT_TERMINAL_SIZE
 
+# Try to get the terminal size
 try:
     from os import get_terminal_size
-
 
     def _terminal_size() -> int:
         return get_terminal_size().columns
 
     _terminal_size()  # Try if getting terminal size works
+
 except Exception as e:
     print("! [cliasi] Error: Could not retrieve terminal size!", e)
 
@@ -60,21 +60,30 @@ class NonBlockingProgressTask(NonBlockingAnimationTask):
 
 
 class Cliasi:
-    def __init__(self, prefix: str = "", use_oneline: bool = False, colors: bool = True, verbose_level: int = 0,
+    """Cliasi CLI instance. This instance saves settings like prefix and min_verbose_level."""
+    min_verbose_level: int
+    oneline: bool
+    enable_colors: bool
+    prefix_seperator: str
+
+    def __init__(self, prefix: str = "", use_oneline: bool = False, colors: bool = True,
+                 min_verbose_level: Optional[int] = None,
                  seperator: str = "|"):
         """
         Initialize a cliasi instance.
         :param prefix: Message Prefix [prefix] message
         :param use_oneline: Have all messages appear in one line by default
         :param colors: Enable color display
-        :param verbose_level: Only displays messages with verbose level higher than this value
+        :param min_verbose_level: Only displays messages with verbose level higher than this value
+        None will result in the verbosity level getting set to the value of the global instance which is by default 0
         :param seperator: Seperator between prefix and message
         """
+        self.min_verbose_level = 0  # Define default
         self.__prefix = ""
         self.update_prefix(prefix)
         self.oneline = use_oneline
         self.enable_colors = colors
-        self.min_verbose_level = verbose_level
+        self.min_verbose_level = min_verbose_level if min_verbose_level is not None else cli.min_verbose_level
         self.prefix_seperator = seperator
 
     def update_prefix(self, prefix: str):
@@ -393,12 +402,12 @@ class Cliasi:
         thread.start()
         return task
 
-    def __progressbar_nonblocking(self, message: str, progress: int, type: str, show_percent: bool,
+    def __progressbar_nonblocking(self, message: str, progress: int, progressbar_type: str, show_percent: bool,
                                   interval: Union[int, float],
                                   color: Color,
                                   oneline_override: Optional[bool] = False) -> NonBlockingProgressTask:
 
-        animation = PROGRESSBAR_LOADING[type][randint(0, len(PROGRESSBAR_LOADING[type]) - 1)]
+        animation = PROGRESSBAR_LOADING[progressbar_type][randint(0, len(PROGRESSBAR_LOADING[progressbar_type]) - 1)]
 
         condition = Event()
 
@@ -437,6 +446,7 @@ class Cliasi:
         """
         Display an animated progressbar
         Update progress using the returned Task object
+        :param interval: Interval between animation frames
         :param message: Message to display
         :param progress: Current Progress to display
         :param show_percent: Show percent next to the progressbar
@@ -452,6 +462,7 @@ class Cliasi:
         """
         Display an animated progressbar
         Update progress using the returned Task object
+        :param interval: Interval between animation frames
         :param message: Message to display
         :param progress: Current Progress to display
         :param show_percent: Show percent next to the progressbar
@@ -460,3 +471,6 @@ class Cliasi:
         """
         return self.__progressbar_nonblocking(message, progress, "download", show_percent, interval, Color.CYAN,
                                               oneline_override)
+
+
+cli = Cliasi("CLI", min_verbose_level=0)  # Default Cliasi instance
