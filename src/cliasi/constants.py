@@ -58,6 +58,8 @@ PROGRESSBAR_LOADING = {
     ]
 }
 
+DEFAULT_TERMINAL_SIZE = 80
+
 class Color(StrEnum):
     RESET = "\033[0m"
     DIM = "\033[2m"

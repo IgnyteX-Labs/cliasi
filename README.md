@@ -62,7 +62,7 @@ cli.success("Process quit")
 
 ### Progress Bars
 You can also have a progress bar which adapts to the size of your terminal <br>
-There are static versions which you just call every time you have an update and animated versions.
+This is the "static" version which you just call whenever you get an update.
 
 ```python
 from cliasi import cli
@@ -77,8 +77,7 @@ cli.success("Calculation complete")
 # This will show a progress bar that will only update when a calculation has finished.
 # Potentially bad if it gets stuck on a calculation
 ```
-
-images will appear here at some point
+Or if you want to have the bar be animated while waiting for progress
 
 ```python
 from cliasi import cli

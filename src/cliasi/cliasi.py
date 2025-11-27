@@ -4,14 +4,7 @@ from typing import Union, Optional, Callable
 from threading import Thread, Event
 
 
-from .constants import PROGRESSBAR_LOADING, LOADING, Color
-
-DEFAULT_TERMINAL_SIZE = 40
-
-
-def _terminal_size() -> int:
-    return DEFAULT_TERMINAL_SIZE
-
+from .constants import PROGRESSBAR_LOADING, LOADING, Color, DEFAULT_TERMINAL_SIZE
 
 try:
     from os import get_terminal_size
@@ -20,8 +13,12 @@ try:
     def _terminal_size() -> int:
         return get_terminal_size().columns
 
+    _terminal_size()  # Try if getting terminal size works
 except Exception as e:
     print("! [cliasi] Error: Could not retrieve terminal size!", e)
+
+    def _terminal_size() -> int:
+        return DEFAULT_TERMINAL_SIZE
 
 
 class NonBlockingAnimationTask:
@@ -329,7 +326,7 @@ class Cliasi:
             i += 1
 
         # Wrap with brackets
-        return "[" + "".join(bar) + "]" + f" {p}%" if show_percent else ""
+        return "[" + "".join(bar) + "]" + (f" {p}%" if show_percent else "")
 
     def progressbar(self, message: str, progress: int = 0, oneline_override: Optional[bool] = False,
                     show_percent: bool = False):
