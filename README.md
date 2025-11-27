@@ -59,6 +59,8 @@ do_stuff_that_takes_time()
 task.stop()  # Stop the animation
 cli.success("Process quit")
 ```
+![animate_message_nonblocking look in the console](https://github.com/user-attachments/assets/e452fbbc-3eed-42c2-b05d-8f532ca11276)
+
 
 ### Progress Bars
 You can also have a progress bar which adapts to the size of your terminal <br>
@@ -93,3 +95,4 @@ extract_again()
 
 task.stop()
 ```
+![progressbar_animated_download look in the console](https://github.com/user-attachments/assets/348ddfd8-f1ea-441d-873e-a17e6818fff5)
