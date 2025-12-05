@@ -2,13 +2,13 @@
 from cliasi import cli, Cliasi, TextColor
 from time import sleep
 
-cli.update_prefix("COLORS")
+cli.set_prefix("COLORS")
 cli.message("LISTING COLORS")
 for color in TextColor:
     cli.list(color.value + color.name)
 
 cli.newline()
-cli.update_prefix("STATIC")
+cli.set_prefix("STATIC")
 cli.message("MESSAGE TEST")
 cli.info("INFO TEST")
 cli.log("LOG TEST")
@@ -19,8 +19,12 @@ cli.fail("FAIL TEST")
 cli.success("SUCCESS TEST")
 cli.newline()
 
+cli.set_prefix("LINEBREAKS")
+cli.message("LINEBREAK TEST\nSUCCESSFUL")
+cli.info("TEST THISWILLNOTBECUTOFF!" * 100)
 
-cli.update_prefix("ANIMATED")
+
+cli.set_prefix("ANIMATED")
 cli.animate_message_blocking("MESSAGE BLOCKING", 3)
 task: Cliasi.NonBlockingProgressTask = cli.animate_message_non_blocking("MESSAGE NONBLOCKING")
 sleep(3)
@@ -29,7 +33,7 @@ task: Cliasi.NonBlockingProgressTask = cli.animate_message_download_non_blocking
 sleep(3)
 task.stop()
 
-cli.update_prefix("PROGRESS")
+cli.set_prefix("PROGRESS")
 cli.newline()
 cli.progressbar("PROGRESS", progress=70, override_messages_stay_in_one_line=False, show_percent=True)
 cli.progressbar_download("PROGRESS DOWNLOAD", progress=70, override_messages_stay_in_one_line=False)
@@ -48,7 +52,7 @@ task.update(progress=1000)
 sleep(1)
 task.stop()
 
-cli.update_prefix("ASK")
+cli.set_prefix("ASK")
 cli.newline()
 
 cli.ask("QUESTION: ")
