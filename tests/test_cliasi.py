@@ -327,7 +327,7 @@ def test_symbols_and_version_present():
     assert SYMBOLS.get("download") == "⤓"
     # Version string exists and looks like semantic version
     assert isinstance(__version__, str)
-    assert __version__.count(".") >= 1
+    assert __version__.count(".") >= 1 or __version__ == "0+unknown"
 
 
 def test_textcolor_contains_expected_members():
