@@ -302,7 +302,7 @@ class Cliasi:
         :param message: Question to ask
         :param hide_input: True hides user input
         :param override_messages_stay_in_one_line: Override the message to stay in one line
-        :return: None
+        :return: The user input as a string.
         """
 
         self.__print(TextColor.BRIGHT_MAGENTA if hide_input else TextColor.MAGENTA, "?", message, True)
