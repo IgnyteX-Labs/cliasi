@@ -1,8 +1,9 @@
 """Command line utility for coloring text and writing pretty things."""
 __author__ = "Qrashi"
 
-from .cliasi import Cliasi, cli
+from .cliasi import Cliasi, cli, STDOUT_STREAM, STDERR_STREAM
 from .constants import TextColor
+from .logging_handler import install_logger, install_exception_hook
 
 try:
     # Prefer the file written by setuptools_scm at build/install time
@@ -21,4 +22,8 @@ SYMBOLS = {
     "download": "⤓",
 }
 
-__all__ = ['SYMBOLS', 'Cliasi', 'cli', 'TextColor']
+
+install_logger(cli)
+install_exception_hook(cli)
+
+__all__ = ['SYMBOLS', 'Cliasi', 'cli', 'TextColor', 'install_logger', 'STDOUT_STREAM', 'STDERR_STREAM']

@@ -2,7 +2,12 @@
 Output pretty command line text without hassle.
 <br>This is mostly a collection of pretty print commands
 
-By using colorama, the text you see below is colored nicely.
+View the [documentation here](https://ignytex-labs.github.io/cliasi/).
+### Installation
+```shell
+pip install cliasi
+```
+
 ## Basic Usage
 
 ```python

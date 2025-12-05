@@ -1,3 +1,9 @@
+"""
+Constants used across the cliasi library.
+
+This module defines animations and default settings for the CLI.
+"""
+
 from enum import StrEnum
 from typing import List, Dict, Union
 
