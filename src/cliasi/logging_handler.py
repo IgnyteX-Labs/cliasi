@@ -28,23 +28,24 @@ class CLILoggingHandler(logging.Handler):
         self.cli = cli_instance
         self.setFormatter(logging.Formatter("%(message)s"))
 
-    def emit(self, record: logging.LogRecord):
+    def emit(self, record: logging.LogRecord) -> None:
         """
         Emit a log record to the Cliasi instance
 
         :param record: logging.LogRecord
+        :return: None
         """
         try:
             msg = self.format(record)
             level = record.levelno
             if level >= logging.ERROR:
-                exec_text = ""
+                exc_text = ""
                 if record.exc_info:
                     # Unpack exc_info tuple explicitly to satisfy static analysis and clarity
                     exc_type, exc_value, exc_tb = record.exc_info
-                    exec_text = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+                    exc_text = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
                 # pass verbosity so Cliasi can filter
-                self.cli.fail(msg + exec_text, verbosity=level)
+                self.cli.fail(msg + exc_text, verbosity=level)
             elif level >= logging.WARNING:
                 self.cli.warn(msg, verbosity=level)
             elif level >= logging.INFO:
@@ -61,7 +62,7 @@ def install_logger(cli_instance: Cliasi, replace_root_handlers: bool = False) ->
     Install the CLILoggingHandler to the root logger
 
     :param cli_instance: Cliasi instance (default cli instance)
-    :param replace_root_handlers: If True, remove existing StreamHandlers from the root logger will be removed, only cliasi will print to console.
+    :param replace_root_handlers: If True, existing StreamHandlers will be removed from the root logger so that only cliasi will print to the console. If False, existing StreamHandlers are left unchanged.
     :return: None
     """
     handler = CLILoggingHandler(cli_instance)

@@ -88,7 +88,7 @@ class Cliasi:
         self.__prefix_seperator = seperator
         self.__compute_space_before_message()
 
-    def set_prefix(self, prefix: str):
+    def set_prefix(self, prefix: str) -> None:
         """
         Update the message prefix of this instance.
         Prefixes should be three letters long but do as you wish.
@@ -109,19 +109,16 @@ class Cliasi:
         return level < self.min_verbose_level
 
     def __print(self, color: TextColor, symbol: str, message: str, override_messages_stay_in_one_line: Optional[bool],
-                color_message: bool = True, write_to_stderr: bool = False,
-                top_separator: str = "-", bottom_separator: str = "-", line_separator: str = "|"):
+                color_message: bool = True, write_to_stderr: bool = False) -> None:
         """
         Print message to console with word wrapping and customizable separators.
+
         :param color: Color to print message and symbol
         :param symbol: Symbol to print at start of message
         :param message: Message to print
         :param override_messages_stay_in_one_line: Override the message to stay in one line
         :param color_message: Print the main message with color
         :param write_to_stderr: Write message to stderr instead of stdout
-        :param top_separator: Separator for the top line
-        :param bottom_separator: Separator for the bottom line
-        :param line_separator: Separator for intermediate lines
         :return: None
         """
         oneline = self.messages_stay_in_one_line if override_messages_stay_in_one_line is None else override_messages_stay_in_one_line
@@ -163,7 +160,7 @@ class Cliasi:
                           )
 
     def message(self, message: str, verbosity: int = logging.INFO,
-                override_messages_stay_in_one_line: Optional[bool] = None):
+                override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Send a message in format # [prefix] message
 
@@ -179,7 +176,7 @@ class Cliasi:
                      color_message=False)
 
     def info(self, message: str, verbosity: int = logging.INFO,
-             override_messages_stay_in_one_line: Optional[bool] = None):
+             override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Print an informational message.
         Send an info message in format i [prefix] message
@@ -195,7 +192,7 @@ class Cliasi:
         self.__print(TextColor.BRIGHT_WHITE, "i", message, override_messages_stay_in_one_line, color_message=False)
 
     def log(self, message: str, verbosity: int = logging.DEBUG,
-            override_messages_stay_in_one_line: Optional[bool] = None):
+            override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Send a log message in format LOG [prefix] message
 
@@ -211,7 +208,7 @@ class Cliasi:
                      color_message=False)
 
     def log_small(self, message: str, verbosity: int = logging.DEBUG,
-                  override_messages_stay_in_one_line: Optional[bool] = None):
+                  override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Send a log message in format LOG [prefix] message
 
@@ -227,7 +224,7 @@ class Cliasi:
                      color_message=False)
 
     def list(self, message: str, verbosity: int = logging.INFO,
-             override_messages_stay_in_one_line: Optional[bool] = None):
+             override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Send a list style message in format * [prefix] message
 
@@ -242,7 +239,7 @@ class Cliasi:
         self.__print(TextColor.BRIGHT_WHITE, "-", message, override_messages_stay_in_one_line, color_message=False)
 
     def warn(self, message: str, verbosity: int = logging.WARNING,
-             override_messages_stay_in_one_line: Optional[bool] = None):
+             override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Send a warning message in format ! [prefix] message
 
@@ -257,7 +254,7 @@ class Cliasi:
         self.__print(TextColor.BRIGHT_YELLOW, "!", message, override_messages_stay_in_one_line)
 
     def fail(self, message: str, verbosity: int = logging.CRITICAL,
-             override_messages_stay_in_one_line: Optional[bool] = None):
+             override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Send a failure message in format X [prefix] message
 
@@ -272,7 +269,7 @@ class Cliasi:
         self.__print(TextColor.BRIGHT_RED, "X", message, override_messages_stay_in_one_line, write_to_stderr=True)
 
     def success(self, message: str, verbosity: int = logging.INFO,
-                override_messages_stay_in_one_line: Optional[bool] = None):
+                override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Send a success message in format ✔ [prefix] message
 
@@ -286,7 +283,8 @@ class Cliasi:
 
         self.__print(TextColor.BRIGHT_GREEN, "✔", message, override_messages_stay_in_one_line)
 
-    def newline(self):
+    @staticmethod
+    def newline() -> None:
         """
         Print a newline.
 
@@ -316,7 +314,7 @@ class Cliasi:
         return result
 
     def __show_animation_frame(self, message: str, color: TextColor, current_symbol_frame: str,
-                               current_animation_frame: str):
+                               current_animation_frame: str) -> None:
         """
         Show a single animation frame based on total index
 
@@ -338,7 +336,7 @@ class Cliasi:
                                  verbosity: int = logging.INFO,
                                  interval: Union[int, float] = 0.25,
                                  unicorn: bool = False,
-                                 override_messages_stay_in_one_line: Optional[bool] = None):
+                                 override_messages_stay_in_one_line: Optional[bool] = None) -> None:
         """
         Display a loading animation for a fixed time
         This will block the main thread using time.sleep
@@ -459,7 +457,7 @@ class Cliasi:
 
     def progressbar(self, message: str, verbosity: int = logging.INFO, progress: int = 0,
                     override_messages_stay_in_one_line: Optional[bool] = False,
-                    show_percent: bool = False):
+                    show_percent: bool = False) -> None:
         """
         Display a progress bar with specified progress
         This requires grabbing correct terminal width
@@ -481,9 +479,9 @@ class Cliasi:
                      self.__format_progressbar_to_screen_width(message, "#", progress, show_percent),
                      override_messages_stay_in_one_line)
 
-    def progressbar_download(self, message: str, verbosity: int = logging.INFO, progress: int = logging.INFO,
+    def progressbar_download(self, message: str, verbosity: int = logging.INFO, progress: int = 0,
                              show_percent: bool = False,
-                             override_messages_stay_in_one_line: Optional[bool] = False):
+                             override_messages_stay_in_one_line: Optional[bool] = False) -> None:
         """
         Display a download bar with specified progress
         This is not animated. Call it multiple times to update
@@ -525,12 +523,12 @@ class Cliasi:
             if not self._message_stays_in_one_line:
                 print("")
 
-        def update(self, message: Optional[str] = None):
+        def update(self, message: Optional[str] = None) -> None:
             """
             Update message of animation
 
             :param message: Message to update to (None for no update)
-            :return:
+            :return: None
             """
             self._message = message if message is not None else self._message
             self._update()
@@ -556,22 +554,22 @@ class Cliasi:
         task = Cliasi.NonBlockingAnimationTask(message, condition,
                                                override_messages_stay_in_one_line if override_messages_stay_in_one_line is not None else self.messages_stay_in_one_line)
 
-        def update():
+        def update() -> None:
             """
             Update the animation to the current frame
 
-            :return:
+            :return: None
             """
             self.__show_animation_frame(task._message, color if not unicorn else UNICORN[task._index % len(UNICORN)],
                                         symbol_animation[task._index % len(symbol_animation)],
                                         main_animation["frames"][(task._index // main_animation["frame_every"]) % len(
                                             main_animation["frames"])])
 
-        def animate():
+        def animate() -> None:
             """
             Main animation task to be run in thread
 
-            :return:
+            :return: None
             """
             while not condition.is_set():
                 task.update()
@@ -648,13 +646,13 @@ class Cliasi:
             super().__init__(message, stop_condition, override_messages_stay_in_one_line)
             self._progress = progress
 
-        def update(self, message: Optional[str] = None, progress: Optional[int] = None, *args, **kwargs):
+        def update(self, message: Optional[str] = None, progress: Optional[int] = None, *args, **kwargs) -> None:
             """
             Update progressbar message and progress
 
             :param message: Message to update to (None for no update)
             :param progress: Progress to update to (None for no update)
-            :return:
+            :return: None
             """
             self._progress = progress if progress is not None else self._progress
             super(Cliasi.NonBlockingProgressTask, self).update(message)
@@ -696,11 +694,11 @@ class Cliasi:
                                               override_messages_stay_in_one_line if override_messages_stay_in_one_line is not None else self.messages_stay_in_one_line,
                                               progress)
 
-        def update_bar():
+        def update_bar() -> None:
             """
             Update only the progressbar section of the animation.
 
-            :return:
+            :return: None
             """
             current_symbol = symbol_animation[task._index % len(symbol_animation)]
             self.__show_animation_frame(
@@ -708,11 +706,11 @@ class Cliasi:
                 color if not unicorn else UNICORN[task._index % len(UNICORN)],
                 current_symbol, current_animation_frame="")
 
-        def animate():
+        def animate() -> None:
             """
             Animate the progressbar
 
-            :return:
+            :return: None
             """
             while not condition.is_set():
                 task.update()
