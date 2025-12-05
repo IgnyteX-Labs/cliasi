@@ -1,11 +1,6 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=61", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
-
-[tool]
-dynamic = ["version"]
-name = "cliasi"
-description = "Have a nice looking, simple cli in seconds"
 
 [project]
 name = "cliasi"
@@ -24,5 +19,21 @@ license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 
 [project.urls]
-Homepage = "https://github.com/qrashi/cliasi"
-Issues = "https://github.com/qrashi/cliasi/issues"
+Homepage = "https://github.com/IgnyteX-Labs/cliasi"
+Issues = "https://github.com/IgnyteX-Labs/cliasi/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["cliasi*"]
+
+[tool.setuptools_scm]
+write_to = "src/cliasi/__about__.py"
+fallback_version = "0+unknown"
+
+[project.optional-dependencies]
+# Documentation dependencies; install with `pip install .[docs]`
+dev = ["pytest"]
+docs = [
+    "sphinx>=7",
+    "furo>=2024.1.29",
+]
