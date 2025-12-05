@@ -66,10 +66,11 @@ def install_logger(cli_instance: Cliasi, replace_root_handlers: bool = False) ->
     :return: None
     """
     handler = CLILoggingHandler(cli_instance)
+    handler.setLevel(logging.NOTSET)
 
     root = logging.getLogger()
     for h in list(root.handlers):
-        if isinstance(h, logging.StreamHandler):
+        if isinstance(h, CLILoggingHandler):
             root.removeHandler(h)
 
     if replace_root_handlers:
@@ -77,7 +78,8 @@ def install_logger(cli_instance: Cliasi, replace_root_handlers: bool = False) ->
             if isinstance(h, logging.StreamHandler):
                 root.removeHandler(h)
 
-    root.addHandler(handler)
+    if handler not in root.handlers:
+        root.addHandler(handler)
     root.setLevel(logging.NOTSET)
 
 
