@@ -121,9 +121,9 @@ def install_exception_hook(cli_instance: Cliasi) -> None:
 
         # Normal path: use the Cliasi instance to report the exception, but guard against any errors
         try:
-            cli_instance.fail("Uncaught exception:", verbosity=logging.ERROR)
+            cli_instance.fail("Uncaught exception:", verbosity=logging.ERROR, override_messages_stay_in_one_line=False)
             exception_text = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
-            cli_instance.fail(exception_text, verbosity=logging.ERROR)
+            cli_instance.fail(exception_text, verbosity=logging.ERROR, override_messages_stay_in_one_line=False)
         except Exception:
             # If Cliasi methods fail while handling the exception, fallback to stderr so we don't raise again
             try:

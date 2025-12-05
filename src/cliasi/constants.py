@@ -90,4 +90,5 @@ class TextColor(StrEnum):
     BRIGHT_WHITE = "\033[97m"
 
 
-UNICORN = [e.value for e in TextColor if e.name.startswith("BRIGHT_") and not e.name in ["BRIGHT_BLACK", "BRIGHT_WHITE"]]
+UNICORN = [e.value for e in TextColor if
+           e.name.startswith("BRIGHT_") and not (e.name in ["BRIGHT_BLACK", "BRIGHT_WHITE"])]

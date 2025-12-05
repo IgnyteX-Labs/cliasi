@@ -3,7 +3,6 @@ import time
 import io
 import sys
 import logging
-import builtins
 
 import pytest
 
@@ -37,6 +36,8 @@ def capture_streams(monkeypatch):
     calls are captured by the tests.
     """
     from cliasi import cliasi as cliasi_module
+    # Also get logging_handler so we can patch its STDERR_STREAM import used by the exception hook
+    from cliasi import logging_handler as logging_handler_module
 
     out_buf = io.StringIO()
     err_buf = io.StringIO()
@@ -44,6 +45,9 @@ def capture_streams(monkeypatch):
     # Redirect the module-level streams
     monkeypatch.setattr(cliasi_module, "STDOUT_STREAM", out_buf)
     monkeypatch.setattr(cliasi_module, "STDERR_STREAM", err_buf)
+    # Also redirect the logging_handler's imported STDERR_STREAM so exception hook fallback writes are captured
+    monkeypatch.setattr(logging_handler_module, "STDERR_STREAM", err_buf)
+
     # Also redirect the real system streams so plain print() calls are captured
     monkeypatch.setattr(sys, "stdout", out_buf)
     monkeypatch.setattr(sys, "stderr", err_buf)
@@ -192,8 +196,8 @@ def test_newline_prints_single_newline(capture_streams):
     c = Cliasi("NL", messages_stay_in_one_line=False, colors=False)
     c.newline()
     captured = out_buf.getvalue() + err_buf.getvalue()
-    # newline should just print a single newline; pytest's capture may intercept prints, so accept empty as well
-    assert captured == "" or "\n" in captured
+    # newline should just print a single newline
+    assert "\n" in captured
 
 
 def test_ask_visible_and_hidden(monkeypatch, capture_streams):
@@ -330,3 +334,114 @@ def test_textcolor_contains_expected_members():
     # Ensure TextColor enum exposes some basic colors and control codes
     names = {e.name for e in TextColor}
     assert {"RESET", "DIM", "RED", "GREEN", "YELLOW"}.issubset(names)
+
+
+def test_multiline_printing(capture_streams):
+    out_buf, err_buf = capture_streams
+    c = Cliasi("ML", messages_stay_in_one_line=False, colors=False)
+    multi = "first line\nsecond line\nthird line"
+    c.info(multi)
+    raw = out_buf.getvalue()
+    clean = normalize_output(raw)
+    # All lines should be present in the output
+    assert "first line" in clean
+    assert "second line" in clean
+    assert "third line" in clean
+    # The first line should use the info symbol and prefix
+    assert clean.startswith("i [ML]")
+
+
+def test_exception_hook_user_exception(capture_streams):
+    out_buf, err_buf = capture_streams
+    import sys
+
+    # Produce an exception from user code (not from cliasi).
+    try:
+        raise ValueError("boom")
+    except Exception:
+        exc_info = sys.exc_info()
+        # Call the installed excepthook (installed at package import time)
+        sys.excepthook(*exc_info)
+
+    # The handler should have used the Cliasi instance to report the uncaught exception (written to stderr)
+    err = normalize_output(err_buf.getvalue())
+    # Depending on filesystem layout the traceback may be classified as coming from `cliasi` (e.g. when
+    # the test path contains '/cliasi/'). Accept either the normal Cliasi reporting path OR the
+    # cliasi-package fallback message that writes to stderr directly.
+    normal_path = ("Uncaught exception:" in err and "ValueError: boom" in err)
+    fallback_path = "Uncaught exception inside cliasi package; falling back to stderr" in err and "ValueError: boom" in err
+    assert normal_path or fallback_path, f"Unexpected exception hook output:\n{err}"
+
+
+def test_exception_hook_from_cliasi_does_not_use_cli_fail(capture_streams):
+    out_buf, err_buf = capture_streams
+    from cliasi import cliasi as cliasi_module
+    import sys
+
+    # Add a function to cliasi module that raises so the traceback is attributed to cliasi
+    def raise_in_cliasi():
+        raise RuntimeError("internal")
+
+    # Attach to module so the traceback will look like it originated from cliasi
+    setattr(cliasi_module, "raise_in_cliasi", raise_in_cliasi)
+
+    try:
+        # Call via getattr because the attribute is added dynamically
+        getattr(cliasi_module, "raise_in_cliasi")()
+    except Exception:
+        exc_info = sys.exc_info()
+        # Invoke excepthook directly to simulate uncaught exception
+        sys.excepthook(*exc_info)
+
+    # Because the exception originates from cliasi, the handler should write a minimal fallback to stderr
+    err = normalize_output(err_buf.getvalue())
+    assert "Uncaught exception inside cliasi package; falling back to stderr" in err
+    # Also ensure the formatted traceback contains the original exception message
+    assert "RuntimeError: internal" in err
+
+
+def test_install_logger_registers_handler():
+    from cliasi import logging_handler as logging_handler_module
+
+    root = logging.getLogger()
+    old_handlers = list(root.handlers)
+    old_level = root.level
+    try:
+        c = Cliasi("LG", messages_stay_in_one_line=False, colors=False)
+        logging_handler_module.install_logger(c)
+
+        handlers = list(root.handlers)
+        # Find a CLILoggingHandler that references our Cliasi instance
+        found = any(isinstance(h, logging_handler_module.CLILoggingHandler) and getattr(h, "cli", None) is c for h in handlers)
+        assert found, "CLILoggingHandler was not registered on the root logger"
+        assert root.level == logging.NOTSET
+    finally:
+        # Restore root logger state to avoid interfering with other tests
+        root.handlers[:] = []
+        for h in old_handlers:
+            root.addHandler(h)
+        root.setLevel(old_level)
+
+
+def test_install_logger_replaces_stream_handlers():
+    from cliasi import logging_handler as logging_handler_module
+
+    root = logging.getLogger()
+    old_handlers = list(root.handlers)
+    old_level = root.level
+    try:
+        # Ensure there's at least one StreamHandler present
+        sh = logging.StreamHandler()
+        root.addHandler(sh)
+        c = Cliasi("LG2", messages_stay_in_one_line=False, colors=False)
+        logging_handler_module.install_logger(c, replace_root_handlers=True)
+
+        # No StreamHandler should remain on the root logger
+        assert not any(isinstance(h, logging.StreamHandler) for h in root.handlers), "StreamHandler was not removed from root logger"
+        # CLILoggingHandler should be present
+        assert any(isinstance(h, logging_handler_module.CLILoggingHandler) for h in root.handlers)
+    finally:
+        root.handlers[:] = []
+        for h in old_handlers:
+            root.addHandler(h)
+        root.setLevel(old_level)

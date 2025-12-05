@@ -28,6 +28,7 @@ Here is a quick example to get you started:
 
    getting_started
    advanced
+   set_up_development_environment
 
 .. toctree::
    :maxdepth: 2
