@@ -21,6 +21,7 @@ license-files = ["LICENSE"]
 [project.urls]
 Homepage = "https://github.com/IgnyteX-Labs/cliasi"
 Issues = "https://github.com/IgnyteX-Labs/cliasi/issues"
+Documentation = "https://ignytex-labs.github.io/cliasi/"
 
 [tool.setuptools.packages.find]
 where = ["src"]

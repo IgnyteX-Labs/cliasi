@@ -24,7 +24,7 @@ try:
     except PackageNotFoundError:
         # Fallback to import if available (e.g., when running without install)
         try:
-            from singlejson import __version__ as release  # type: ignore
+            from cliasi import __version__ as release  # type: ignore
         except Exception:
             release = '0.0.0'
 except Exception:

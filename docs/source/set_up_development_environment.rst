@@ -8,7 +8,7 @@ To set up the development environment for cliasi, follow these steps:
 
    .. code-block:: bash
 
-       git clone
+       git clone https://github.com/IgnyteX-Labs/cliasi.git
 
 **Install dev dependencies**:
    Navigate to the cloned repository and install the development dependencies using pip:

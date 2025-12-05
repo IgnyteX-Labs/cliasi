@@ -26,7 +26,7 @@ Quickstart
     # > ! [CLI] | This is a warning message.
     cli.fail("An error occurred!")
     # > X [CLI] | An error occurred!
-    # Debug messages are hidden by default as default verbostiy level is INFO
+    # Debug messages are hidden by default as default verbosity level is INFO
     cli.log("This is a debug message (only shown with high verbosity).")
     # > (no output)
     cli.min_verbose_level = logging.DEBUG
@@ -34,14 +34,16 @@ Quickstart
 messages_stay_in_one_line
 --------------------------
 
-When ``messages_stay_in_one_line`` is set to ``True``, all subsequent messagesfinish
+When ``messages_stay_in_one_line`` is set to ``True``, all subsequent messages
 will overwrite the previous message instead of creating a new line. This is useful for progress updates or status messages.
-<br> This is disabled by default so enable it using ``cli.messages_stay_in_one_line = True``. or pass ``Cliasi(prefix="CLI", messages_stay_in_one_line=True)`` when creating a new instance.
+
+This is disabled by default so enable it using ``cli.messages_stay_in_one_line = True``. or pass ``Cliasi(prefix="CLI", messages_stay_in_one_line=True)`` when creating a new instance.
 
 Cliasi instances
 -----------------
 You can also create your own instance to customize its behavior.
-<br>This is especially helpful when giving over control to other parts of your application.
+
+This is especially helpful when giving over control to other parts of your application.
 The new instance will copy the global verbosity setting when no verbosity is specified.
 
 .. code-block:: python
