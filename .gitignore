@@ -3,6 +3,8 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+src/cliasi/__about__.py
+
 # C extensions
 *.so
 
