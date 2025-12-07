@@ -16,9 +16,9 @@ To set up the development environment for cliasi, follow these steps:
    .. code-block:: bash
 
        cd cliasi
-       pip install -e .[dev]
+       pip install -e '.[dev]'
        # Optional: install docs dependencies too
-       pip install -e .[docs]
+       pip install -e '.[docs]'
 
 **Run Tests**:
     You can run the test suite using pytest to ensure everything is set up correctly:
