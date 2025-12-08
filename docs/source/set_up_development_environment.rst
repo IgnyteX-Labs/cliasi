@@ -32,4 +32,4 @@ To set up the development environment for cliasi, follow these steps:
 
     .. code-block:: bash
 
-        sphinx-build -b html docs/source docs/build/html
+        make html -c docs

@@ -1,17 +1,20 @@
-.. cliasi documentation master file, created by f.rader
-   sphinx-quickstart on Mon May 20 19:39:32 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to the cliasi documentation!
 ======================================
+
+Current version: |release|
 
 Cliasi is a simple CLI library designed to enhance command-line interfaces with ease. It provides features like verbosity control, colorful outputs, and logging integration.
 
 Get started in a minute using the guide below, or dive into the API reference.
 
-Quick Example:
+Set up:
 --------------
+Install cliasi
+
+.. code-block:: python
+  :substitutions:
+
+   pip install cliasi==|version|
 
 Here is a quick example to get you started:
 

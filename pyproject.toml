@@ -35,6 +35,7 @@ fallback_version = "0+unknown"
 # Documentation dependencies; install with `pip install .[docs]`
 dev = ["pytest"]
 docs = [
-    "sphinx>=7",
+    "sphinx>=9.0.0",
     "furo>=2024.1.29",
+    "sphinx-substitution-extensions"
 ]
