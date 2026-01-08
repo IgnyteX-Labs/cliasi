@@ -3,6 +3,7 @@
 __author__ = "Qrashi"
 
 from .cliasi import STDERR_STREAM, STDOUT_STREAM, Cliasi, cli
+from .constants import TextColor
 from .logging_handler import install_exception_hook, install_logger
 
 __version__: str
@@ -25,4 +26,11 @@ except Exception:  # file not generated yet (e.g., fresh clone)
 install_logger(cli)
 install_exception_hook(cli)
 
-__all__ = ["Cliasi", "cli", "install_logger", "STDOUT_STREAM", "STDERR_STREAM"]
+__all__ = [
+    "Cliasi",
+    "cli",
+    "install_logger",
+    "STDOUT_STREAM",
+    "STDERR_STREAM",
+    "TextColor",
+]
