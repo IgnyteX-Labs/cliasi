@@ -29,10 +29,15 @@ STDERR_STREAM = sys.stderr
 
 # Try to get the terminal size
 try:
-    from os import get_terminal_size
+    import os
+    import shutil
+
+    cols = int(os.environ.get("COLUMNS", 80))
+    rows = int(os.environ.get("LINES", 24))
 
     def _terminal_size() -> int:
-        return get_terminal_size().columns
+        return shutil.get_terminal_size(fallback=(cols, rows))[0]
+        # [0] for cols
 
     _terminal_size()  # Try if getting terminal size works
 
@@ -636,7 +641,7 @@ class Cliasi:
         message: str,
         verbosity: int = logging.INFO,
         progress: int = 0,
-        override_messages_stay_in_one_line: bool | None = False,
+        override_messages_stay_in_one_line: bool | None = True,
         show_percent: bool = False,
     ) -> None:
         """
@@ -672,7 +677,7 @@ class Cliasi:
         verbosity: int = logging.INFO,
         progress: int = 0,
         show_percent: bool = False,
-        override_messages_stay_in_one_line: bool | None = False,
+        override_messages_stay_in_one_line: bool | None = True,
     ) -> None:
         """
         Display a download bar with specified progress
@@ -749,7 +754,7 @@ class Cliasi:
         main_animation: dict[str, int | builtins.list[str]],
         interval: int | float,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = False,
+        override_messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingAnimationTask:
         """
         Create an animation task
@@ -871,7 +876,7 @@ class Cliasi:
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = False,
+        override_messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingAnimationTask | None:
         """
         Display a downloading animation in the background
@@ -966,7 +971,7 @@ class Cliasi:
         interval: int | float,
         color: TextColor,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = False,
+        override_messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingProgressTask:
         """
         Get a progressbar task
@@ -1035,7 +1040,7 @@ class Cliasi:
         interval: int | float = 0.25,
         show_percent: bool = False,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = False,
+        override_messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingProgressTask:
         """
         Display an animated progressbar
@@ -1081,7 +1086,7 @@ class Cliasi:
         interval: int | float = 0.25,
         show_percent: bool = False,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = False,
+        override_messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingProgressTask:
         """
         Display an animated progressbar
