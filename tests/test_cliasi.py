@@ -1,13 +1,12 @@
-import re
-import time
 import io
-import sys
 import logging
+import re
+import sys
+import time
 
 import pytest
 
-from cliasi import Cliasi, cli, constants, __version__
-
+from cliasi import Cliasi, __version__, cli, constants
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
@@ -36,6 +35,7 @@ def capture_streams(monkeypatch):
     calls are captured by the tests.
     """
     from cliasi import cliasi as cliasi_module
+
     # Also get logging_handler so we can patch its STDERR_STREAM import used by the exception hook
     from cliasi import logging_handler as logging_handler_module
 
@@ -65,45 +65,58 @@ def test_basic_messages_symbols_and_message(capture_streams):
     assert "| hello" in out
 
     # Clear buffer for next assertion
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
 
     c.warn("be careful")
     out = normalize_output(out_buf.getvalue())
     assert out.startswith("! [TEST]")
     assert "| be careful" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
     c.success("ok")
     out = normalize_output(out_buf.getvalue())
     assert out.startswith("✔ [TEST]")
     assert "| ok" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
     c.fail("nope")
     # fail writes to stderr
     out = normalize_output(err_buf.getvalue())
     assert out.startswith("X [TEST]")
     assert "| nope" in out
 
-    out_buf.truncate(0); out_buf.seek(0); err_buf.truncate(0); err_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+    err_buf.truncate(0)
+    err_buf.seek(0)
+
     c.log("logged", verbosity=logging.INFO)
     out = normalize_output(out_buf.getvalue())
     assert out.startswith("LOG [TEST]")
     assert "| logged" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
     c.log_small("tiny", verbosity=logging.INFO)
     out = normalize_output(out_buf.getvalue())
     assert out.startswith("L [TEST]")
     assert "| tiny" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
     c.message("meh")
     out = normalize_output(out_buf.getvalue())
     assert out.startswith("# [TEST]")
     assert "| meh" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
     c.list("entry")
     out = normalize_output(out_buf.getvalue())
     assert out.startswith("- [TEST]")
@@ -120,7 +133,9 @@ def test_update_prefix_and_separator(capture_streams):
     assert out.startswith("i [NEW]")
     assert "| msg" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
     # The implementation exposes a setter method for the separator
     c.set_seperator("::")
     c.info("again")
@@ -137,7 +152,9 @@ def test_verbosity_filters(capture_streams):
     out = normalize_output(out_buf.getvalue())
     assert "visible" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
     # lower than min -> suppressed
     c.info("hidden", verbosity=0)
     out = out_buf.getvalue()
@@ -157,12 +174,19 @@ def test_override_messages_stay_in_one_line_prints_no_newline(capture_streams):
 def test_progressbar_static(fixed_width, capture_streams):
     out_buf, err_buf = capture_streams
     c = Cliasi("PB", messages_stay_in_one_line=False, colors=False)
-    c.progressbar("Working", progress=50, override_messages_stay_in_one_line=False, show_percent=True)
+    c.progressbar(
+        "Working",
+        progress=50,
+        override_messages_stay_in_one_line=False,
+        show_percent=True,
+    )
     out = normalize_output(out_buf.getvalue())
     assert "[" in out and "]" in out
     assert "50%" in out
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
     c.progressbar_download("Downloading", progress=10, show_percent=False)
     out = normalize_output(out_buf.getvalue())
     assert "[" in out and "]" in out
@@ -182,7 +206,9 @@ def test_non_blocking_animation_starts_and_stops(capture_streams):
 def test_non_blocking_progressbar_update_and_stop(fixed_width, capture_streams):
     out_buf, err_buf = capture_streams
     c = Cliasi("APB", messages_stay_in_one_line=True, colors=False)
-    task = c.progressbar_animated_normal("Doing", progress=0, interval=0.01, show_percent=True)
+    task = c.progressbar_animated_normal(
+        "Doing", progress=0, interval=0.01, show_percent=True
+    )
     time.sleep(0.02)
     task.update(progress=25)
     time.sleep(0.02)
@@ -213,7 +239,9 @@ def test_ask_visible_and_hidden(monkeypatch, capture_streams):
     assert res == "visible_answer"
     assert "? [" in normalize_output(out1)
 
-    out_buf.truncate(0); out_buf.seek(0)
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
     # Hidden input path
     monkeypatch.setattr(cliasi_module, "getpass", lambda prompt="": "secret_answer")
     res2 = c.ask("Hidden? ", hide_input=True)
@@ -270,7 +298,9 @@ def test_null_task_is_safe_for_animations_when_verbosity_suppressed(capture_stre
     task1.stop()  # idempotent
 
     # Download variant
-    task2 = c.animate_message_download_non_blocking("Hidden DL", verbosity=2, interval=0.005)
+    task2 = c.animate_message_download_non_blocking(
+        "Hidden DL", verbosity=2, interval=0.005
+    )
     assert task2 is not None
     task2.update()
     task2.update(message="Still hidden DL")
@@ -282,9 +312,13 @@ def test_null_task_is_safe_for_animations_when_verbosity_suppressed(capture_stre
     assert out == ""
 
 
-def test_null_task_is_safe_for_progressbars_when_verbosity_suppressed(fixed_width, capture_streams):
+def test_null_task_is_safe_for_progressbars_when_verbosity_suppressed(
+    fixed_width, capture_streams
+):
     out_buf, err_buf = capture_streams
-    c = Cliasi("VTPB", messages_stay_in_one_line=True, colors=False, min_verbose_level=3)
+    c = Cliasi(
+        "VTPB", messages_stay_in_one_line=True, colors=False, min_verbose_level=3
+    )
 
     pb1 = c.progressbar_animated_normal(
         "Hidden PB", verbosity=2, progress=10, interval=0.005, show_percent=True
@@ -368,26 +402,30 @@ def test_exception_hook_user_exception(capture_streams):
     # Depending on filesystem layout the traceback may be classified as coming from `cliasi` (e.g. when
     # the test path contains '/cliasi/'). Accept either the normal Cliasi reporting path OR the
     # cliasi-package fallback message that writes to stderr directly.
-    normal_path = ("Uncaught exception:" in err and "ValueError: boom" in err)
-    fallback_path = "Uncaught exception inside cliasi package; falling back to stderr" in err and "ValueError: boom" in err
+    normal_path = "Uncaught exception:" in err and "ValueError: boom" in err
+    fallback_path = (
+        "Uncaught exception inside cliasi package; falling back to stderr" in err
+        and "ValueError: boom" in err
+    )
     assert normal_path or fallback_path, f"Unexpected exception hook output:\n{err}"
 
 
 def test_exception_hook_from_cliasi_does_not_use_cli_fail(capture_streams):
     out_buf, err_buf = capture_streams
-    from cliasi import cliasi as cliasi_module
     import sys
+
+    from cliasi import cliasi as cliasi_module
 
     # Add a function to cliasi module that raises so the traceback is attributed to cliasi
     def raise_in_cliasi():
         raise RuntimeError("internal")
 
     # Attach to module so the traceback will look like it originated from cliasi
-    setattr(cliasi_module, "raise_in_cliasi", raise_in_cliasi)
+    cliasi_module.raise_in_cliasi = raise_in_cliasi
 
     try:
         # Call via getattr because the attribute is added dynamically
-        getattr(cliasi_module, "raise_in_cliasi")()
+        cliasi_module.raise_in_cliasi()
     except Exception:
         exc_info = sys.exc_info()
         # Invoke excepthook directly to simulate uncaught exception
@@ -412,7 +450,11 @@ def test_install_logger_registers_handler():
 
         handlers = list(root.handlers)
         # Find a CLILoggingHandler that references our Cliasi instance
-        found = any(isinstance(h, logging_handler_module.CLILoggingHandler) and getattr(h, "cli", None) is c for h in handlers)
+        found = any(
+            isinstance(h, logging_handler_module.CLILoggingHandler)
+            and getattr(h, "cli", None) is c
+            for h in handlers
+        )
         assert found, "CLILoggingHandler was not registered on the root logger"
         assert root.level == logging.NOTSET
     finally:
@@ -437,9 +479,14 @@ def test_install_logger_replaces_stream_handlers():
         logging_handler_module.install_logger(c, replace_root_handlers=True)
 
         # No StreamHandler should remain on the root logger
-        assert not any(isinstance(h, logging.StreamHandler) for h in root.handlers), "StreamHandler was not removed from root logger"
+        assert not any(isinstance(h, logging.StreamHandler) for h in root.handlers), (
+            "StreamHandler was not removed from root logger"
+        )
         # CLILoggingHandler should be present
-        assert any(isinstance(h, logging_handler_module.CLILoggingHandler) for h in root.handlers)
+        assert any(
+            isinstance(h, logging_handler_module.CLILoggingHandler)
+            for h in root.handlers
+        )
     finally:
         root.handlers[:] = []
         for h in old_handlers:
