@@ -437,9 +437,9 @@ class Cliasi:
             True,
         )
         if hide_input:
-            result = getpass("")
+            result = getpass(" ")
         else:
-            result = input("")
+            result = input(" ")
         oneline = (
             self.messages_stay_in_one_line
             if override_messages_stay_in_one_line is None
