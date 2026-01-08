@@ -427,9 +427,18 @@ def test_exception_hook_from_cliasi_does_not_use_cli_fail(capture_streams):
         # Call via getattr because the attribute is added dynamically
         cliasi_module.raise_in_cliasi()
     except Exception:
-        exc_info = sys.exc_info()
-        # Invoke excepthook directly to simulate uncaught exception
-        sys.excepthook(*exc_info)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+
+        # We can just manually change it and change it back.
+        old_name = raise_in_cliasi.__globals__.get("__name__")
+        raise_in_cliasi.__globals__["__name__"] = "cliasi.mock"
+        try:
+            sys.excepthook(exc_type, exc_value, exc_traceback)
+        finally:
+            if old_name:
+                raise_in_cliasi.__globals__["__name__"] = old_name
+            else:
+                del raise_in_cliasi.__globals__["__name__"]
 
     # Because the exception originates from cliasi, the handler should write a minimal fallback to stderr
     err = normalize_output(err_buf.getvalue())

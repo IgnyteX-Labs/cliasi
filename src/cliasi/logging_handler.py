@@ -5,6 +5,7 @@ This module provides a custom logging handler that integrates with the Cliasi in
 """
 
 import logging
+import os
 import sys
 import traceback
 from types import TracebackType
@@ -117,6 +118,7 @@ def install_exception_hook(cli_instance: Cliasi) -> None:
         # from the cliasi package to avoid recursive failures
         tb = exc_traceback
         from_cliasi = False
+        package_dir = os.path.dirname(__file__)
         while tb is not None:
             frame = tb.tb_frame
             module_name = frame.f_globals.get("__name__", "")
@@ -124,10 +126,12 @@ def install_exception_hook(cli_instance: Cliasi) -> None:
                 frame.f_code.co_filename if hasattr(frame.f_code, "co_filename") else ""
             )
             if (
-                module_name.startswith("cliasi")
-                or ("/cliasi/" in filename)
-                or ("\\cliasi\\" in filename)
-                or filename.endswith("cliasi.py")
+                module_name.startswith("cliasi.")
+                or module_name == "cliasi"
+                or (
+                    filename
+                    and os.path.commonpath([package_dir, filename]) == package_dir
+                )
             ):
                 from_cliasi = True
                 break
