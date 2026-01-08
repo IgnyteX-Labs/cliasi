@@ -1,2 +1,2 @@
-# Force LF line endings and UTF-8 for SVGs only
-*.svg text eol=lf
+# Prevent Git from changing line endings in SVGs
+docs/source/_static/asciinema/*.svg text eol=lf
