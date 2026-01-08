@@ -93,6 +93,8 @@ DEFAULT_TERMINAL_SIZE: int = 80
 
 
 class TextColor(StrEnum):
+    """Different terminal colors to be used in the CLI."""
+
     RESET = "\033[0m"
     DIM = "\033[2m"
 

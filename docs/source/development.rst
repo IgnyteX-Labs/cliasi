@@ -1,3 +1,6 @@
+Setting up development environment
+==================================
+
 This document describes how to set up a development environment for building
 and testing the documentation and running the test-suite locally.
 

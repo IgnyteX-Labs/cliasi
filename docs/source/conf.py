@@ -12,15 +12,15 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "cliasi"
-copyright = "2025, f.rader"
+copyright = "2026, f.rader"
 author = "f.rader"
 
 # Determine version dynamically from installed package metadata; fall back during local builds.
 # Important: avoid defining a callable named `version` in this module, because Sphinx expects
 # `version` config value to be a string. We alias the import to `pkg_version` to prevent clashes.
 try:
-    from importlib.metadata import version as pkg_version, PackageNotFoundError
-
+    from importlib.metadata import PackageNotFoundError
+    from importlib.metadata import version as pkg_version
     try:
         release = pkg_version("cliasi")
     except PackageNotFoundError:
@@ -28,9 +28,9 @@ try:
         try:
             from cliasi import __version__ as release  # type: ignore
         except Exception:
-            release = "0.0.0"
+            release = '0.0.0'
 except Exception:
-    release = "0.0.0"
+    release = '0.0.0'
 
 
 # Sphinx expects both `version` and `release` strings; often `version` is the short X.Y.
@@ -44,6 +44,8 @@ def _short_version(ver: str) -> str:
 
 
 version = _short_version(release)
+
+autoclass_content = 'both'
 
 rst_prolog = f"""
     .. |version| replace:: {version}

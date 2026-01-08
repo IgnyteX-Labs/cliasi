@@ -20,10 +20,12 @@ from .constants import (
 
 _print_lock: Lock = Lock()
 
-STDOUT_STREAM: TextIO = sys.stdout
+STDOUT_STREAM: TextIO
 """Default stdout stream for cliasi messages. Used by all Cliasi instances"""
-STDERR_STREAM: TextIO = sys.stderr
+STDOUT_STREAM = sys.stdout
+STDERR_STREAM: TextIO
 """Default stderr stream for cliasi messages. Used by all Cliasi instances"""
+STDERR_STREAM = sys.stderr
 
 # Try to get the terminal size
 try:

@@ -1,40 +1,41 @@
-Advanced usage
-==============
+.. _message_types:
 
-Logging Integration
--------------------
+Message types and animations
+==============================
 
-`cliasi` can automatically handle logs from Python's standard `logging` module.
-By default, the global `cli` instance is already set up to handle logs.
+Basic Message Types
+--------------------
+
+``cliasi`` provides several methods for common message types, each with its own symbol and color.
+
+Here is how they look in the console:
 
 .. code-block:: python
 
     from cliasi import cli
-    import logging
 
-    # Get a logger
-    logger = logging.getLogger("my_app")
-    logger.setLevel(logging.INFO)
+    cli.info("Starting process...")
+    cli.success("Process completed!")
+    cli.warn("Disk space is low.")
+    cli.fail("Failed to connect to server.")
+    cli.log("Debug info")
+    cli.list("List item")
 
-    # Log messages like these will also be displayed by cliasi (using the global cli instance)
-    logger.info("This is a log message.")
-    # > i [CLI] | This is a log message.
-    logger.warning("This is a warning from the logger.")
-    # > ! [CLI] | This is a warning from the logger.
-    cli.set_prefix("LOGGER")
-    # Changing the global prefix will result in updated prefixes for log messages too
-    logger.error("This is an error from the logger.")
-    # > X [LOGGER] | This is an error from the logger.
+.. raw:: html
+    .. note::
+    The output above is a simulation of how it appears in a terminal with color support.
 
-If you have problems with logs getting displayed multiple times maybe try running ``install_logger`` with ``replace_root_handlers=True``.
-This will remove all existing root handlers before installing the cliasi default one.
+    <div class="highlight-text notranslate">
+    <div class="highlight"><pre>
+    <span style="color: #ffffff; font-weight: bold">i</span> <span style="color: #888888">[CLI]</span> | Starting process...
+    <span style="color: #00ff00; font-weight: bold">✔</span> <span style="color: #888888">[CLI]</span> | <span style="color: #00ff00">Process completed!</span>
+    <span style="color: #ffff00; font-weight: bold">!</span> <span style="color: #888888">[CLI]</span> | <span style="color: #ffff00">Disk space is low.</span>
+    <span style="color: #ff0000; font-weight: bold">X</span> <span style="color: #888888">[CLI]</span> | <span style="color: #ff0000">Failed to connect to server.</span>
+    <span style="color: #888888">LOG [CLI] | Debug info</span>
+    <span style="color: #ffffff; font-weight: bold">-</span> <span style="color: #888888">[CLI]</span> | List item
+    </pre></div>
+    </div>
 
-.. code-block:: python
-
-    from cliasi import cli, install_logger
-
-    # Install the logger for this instance
-    install_logger(cli, replace_root_handlers=True)
 
 Animations and Progress Bars
 ----------------------------

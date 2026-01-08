@@ -3,22 +3,28 @@ API Reference
 
 Top-level package
 -----------------
-Top level package exports of cliasi
+
+The main interface for ``cliasi``.
+
+cliasi exports the :class:`~cliasi.Cliasi` instance :data:`~cliasi.cli`
+as well as
+
+* :data:`~cliasi.STDOUT_STREAM`
+* :data:`~cliasi.STDERR_STREAM`
+* :class:`~cliasi.constants.TextColor`
+* :func:`~cliasi.logging_handler.install_logger` (to install it your own way, is done automatically)
+
+.. autodata:: cliasi.cli
+.. autodata:: cliasi.STDOUT_STREAM
+.. autodata:: cliasi.STDERR_STREAM
+.. autodata:: cliasi.TextColor
+.. autodata:: cliasi.install_logger
 
 .. automodule:: cliasi
-    :members:
-    :imported-members:
-    :undoc-members:
-    :exclude-members: cliasi.cliasi, constants, logging_handler
-
-Main Cliasi file
------------------------
-
-.. automodule:: cliasi.cliasi
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members: STDOUT_STREAM, STDERR_STREAM, cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :imported-members:
 
 
 Constants (Animations)
