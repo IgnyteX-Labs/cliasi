@@ -53,7 +53,7 @@ ASCIINEMA_DIR := docs/source/_static/asciinema
 
 # Themes
 AGG_LIGHT_THEME := github-light
-AGG_DARK_THEME  := monokai
+AGG_DARK_THEME  := github-dark
 
 casts:
 	@mkdir -p $(ASCIINEMA_DIR)
