@@ -65,7 +65,7 @@ ANIMATION_SYMBOLS_PROGRESSBAR = {
 }
 
 DEFAULT_TERMINAL_SIZE = 80
-
+"""Default terminal size used for CLI rendering."""
 
 class TextColor(StrEnum):
     RESET = "\033[0m"
@@ -92,3 +92,10 @@ class TextColor(StrEnum):
 
 UNICORN = [e.value for e in TextColor if
            e.name.startswith("BRIGHT_") and not (e.name in ["BRIGHT_BLACK", "BRIGHT_WHITE"])]
+"""Colors used for unicorn animation in the CLI."""
+
+SYMBOLS: dict  = {
+    "success": "✔",
+    "download": "⤓",
+}
+"""Symbols used in the CLI for various statuses."""

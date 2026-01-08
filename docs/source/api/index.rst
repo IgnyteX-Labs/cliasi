@@ -3,20 +3,22 @@ API Reference
 
 Top-level package
 -----------------
+Top level package exports of cliasi
 
 .. automodule:: cliasi
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+    :members:
+    :imported-members:
+    :undoc-members:
+    :exclude-members: cliasi.cliasi, constants, logging_handler
 
 Main Cliasi file
 -----------------------
 
 .. automodule:: cliasi.cliasi
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members: STDOUT_STREAM, STDERR_STREAM, cli
 
 
 Constants (Animations)

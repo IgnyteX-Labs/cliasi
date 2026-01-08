@@ -1,9 +1,12 @@
 """Command line utility for coloring text and writing pretty things."""
 __author__ = "Qrashi"
 
+
 from .cliasi import Cliasi, cli, STDOUT_STREAM, STDERR_STREAM
-from .constants import TextColor
 from .logging_handler import install_logger, install_exception_hook
+
+__version__: str
+"""Cliasi version fetched from setuptools_scm or (if not available) set to '0+unknown'."""
 
 try:
     # Prefer the file written by setuptools_scm at build/install time
@@ -17,13 +20,7 @@ except Exception:  # file not generated yet (e.g., fresh clone)
         # Last resort for local source trees without SCM metadata
         __version__ = "0+unknown"
 
-SYMBOLS = {
-    "success": "✔",
-    "download": "⤓",
-}
-
-
 install_logger(cli)
 install_exception_hook(cli)
 
-__all__ = ['SYMBOLS', 'Cliasi', 'cli', 'TextColor', 'install_logger', 'STDOUT_STREAM', 'STDERR_STREAM']
+__all__ = ['Cliasi', 'cli', 'install_logger', 'STDOUT_STREAM', 'STDERR_STREAM']

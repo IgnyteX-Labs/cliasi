@@ -13,7 +13,9 @@ from .constants import ANIMATION_SYMBOLS_PROGRESSBAR, ANIMATIONS_MAIN, ANIMATION
 _print_lock: Lock = Lock()
 
 STDOUT_STREAM: TextIO = sys.stdout
+"""Default stdout stream for cliasi messages. Used by all Cliasi instances"""
 STDERR_STREAM: TextIO = sys.stderr
+"""Default stderr stream for cliasi messages. Used by all Cliasi instances"""
 
 # Try to get the terminal size
 try:
@@ -35,14 +37,7 @@ except Exception as e:
 
 
 class Cliasi:
-    """Cliasi CLI instance. Stores display settings and a minimum verbosity threshold.
-
-    Verbosity model:
-      - Uses Python logging numeric levels as the verbosity scale (e.g. DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50).
-      - A message will be printed when message_verbosity >= min_verbose_level (same semantics as logging.Logger.setLevel).
-        Example: if min_verbose_level == logging.INFO (20), messages with verbosity logging.INFO (20), WARNING (30),
-        ERROR (40), CRITICAL (50) will be shown; DEBUG (10) will be suppressed.
-    """
+    """A Cliasi CLI instance. Stores display settings and a minimum verbosity threshold."""
     min_verbose_level: int
     messages_stay_in_one_line: bool
     enable_colors: bool
@@ -742,7 +737,8 @@ class Cliasi:
         :param show_percent: Show percent next to the progressbar
         :param unicorn: Enable unicorn mode
         :param override_messages_stay_in_one_line: Override the message to stay in one line
-        :return: NonBlockingProgressTask on which you can call update(progress) and stop()
+        :return: NonBlockingProgressTask on which you can call :py:meth:`~cliasi.cliasi.Cliasi.NonBlockingProgressTask.update()` and :py:meth:`~cliasi.cliasi.Cliasi.NonBlockingProgressTask.stop()`
+        :rtype: NonBlockingProgressTask
         """
 
         if self.__verbose_check(verbosity):
@@ -777,7 +773,8 @@ class Cliasi:
         :param show_percent: Show percent next to the progressbar
         :param unicorn: Enable unicorn mode
         :param override_messages_stay_in_one_line: Override the message to stay in one line
-        :return: NonBlockingProgressTask on which you can call update(progress) and stop()
+        :return: NonBlockingProgressTask on which you can call :py:meth:`~cliasi.cliasi.Cliasi.NonBlockingProgressTask.update()` and :py:meth:`~cliasi.cliasi.Cliasi.NonBlockingProgressTask.stop()`
+        :rtype: NonBlockingProgressTask
         """
 
         if self.__verbose_check(verbosity):
@@ -794,5 +791,6 @@ class Cliasi:
                                            override_messages_stay_in_one_line)
 
 
+cli: Cliasi
+"""Default Cliasi instance (shows INFO and above by default)"""
 cli = Cliasi("CLI", min_verbose_level=logging.INFO)
-# Default Cliasi instance (shows INFO and above)

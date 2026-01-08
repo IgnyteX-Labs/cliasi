@@ -6,7 +6,7 @@ import logging
 
 import pytest
 
-from cliasi import Cliasi, cli, SYMBOLS, __version__, TextColor
+from cliasi import Cliasi, cli, constants, __version__
 
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
@@ -321,10 +321,10 @@ def test_default_cli_instance_is_usable(capture_streams):
 
 def test_symbols_and_version_present():
     # Basic sanity checks for package exports from __init__
-    assert isinstance(SYMBOLS, dict)
+    assert isinstance(constants.SYMBOLS, dict)
     # The package declares at least these two symbols
-    assert SYMBOLS.get("success") == "✔"
-    assert SYMBOLS.get("download") == "⤓"
+    assert constants.SYMBOLS.get("success") == "✔"
+    assert constants.SYMBOLS.get("download") == "⤓"
     # Version string exists and looks like semantic version
     assert isinstance(__version__, str)
     assert __version__.count(".") >= 1 or __version__ == "0+unknown"
@@ -332,7 +332,7 @@ def test_symbols_and_version_present():
 
 def test_textcolor_contains_expected_members():
     # Ensure TextColor enum exposes some basic colors and control codes
-    names = {e.name for e in TextColor}
+    names = {e.name for e in constants.TextColor}
     assert {"RESET", "DIM", "RED", "GREEN", "YELLOW"}.issubset(names)
 
 
