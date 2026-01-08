@@ -1,0 +1,18 @@
+.asciinema-demo {
+    max-width: 720px;
+    margin: 1rem auto;
+}
+
+.asciinema-demo img {
+    width: 100%;
+    height: auto;
+}
+
+/* Furo theme switching — CORRECT */
+body[data-theme="light"] .asciinema_demo-dark {
+    display: none;
+}
+
+body[data-theme="dark"] .asciinema_demo-light {
+    display: none;
+}

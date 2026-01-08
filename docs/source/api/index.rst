@@ -17,14 +17,12 @@ as well as
 .. autodata:: cliasi.cli
 .. autodata:: cliasi.STDOUT_STREAM
 .. autodata:: cliasi.STDERR_STREAM
-.. autodata:: cliasi.TextColor
-.. autodata:: cliasi.install_logger
 
 .. automodule:: cliasi
-   :members:
-   :undoc-members:
+   :members: Cliasi, TextColor
    :show-inheritance:
    :imported-members:
+
 
 
 Constants (Animations)
@@ -34,6 +32,7 @@ Constants (Animations)
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:
 
 
 ``logging`` handler
@@ -43,3 +42,4 @@ Constants (Animations)
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:

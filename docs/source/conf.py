@@ -82,6 +82,9 @@ html_theme_options = {
     "sidebar_hide_name": False,
 }
 
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+
 # Syntax highlighting styles (light/dark)
 pygments_style = "sphinx"
 pygments_dark_style = "native"

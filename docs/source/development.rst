@@ -60,4 +60,20 @@ To build the HTML docs into "docs/build/html":
     # Or directly with uv
     uv run --group docs make html -C docs
 
+The documentation uses asciinema to capture output from the terminal
+from animations.
+This cast is then converted to a gif using `aggcast`.
+To update the animations, install `asciinema` and `aggcast` and then run
+the following command from the root of the repository:
+
+.. code-block:: bash
+
+    make casts
+    make casts-interactive
+    make aggconvert
+    make docs
+
+This will re-generate all asciinema gifs in the documentation and update the documentation.
+
+
 
