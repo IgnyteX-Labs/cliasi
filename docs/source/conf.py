@@ -48,8 +48,8 @@ version = _short_version(release)
 autoclass_content = 'both'
 
 rst_prolog = f"""
-    .. |version| replace:: {version}
-    .. |release| replace:: {release}
+.. |version| replace:: {version}
+.. |release| replace:: {release}
 """
 
 # -- General configuration ---------------------------------------------------
