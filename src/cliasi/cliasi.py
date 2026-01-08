@@ -180,8 +180,7 @@ class Cliasi:
                         + (color if self.enable_colors and color_message else ""),
                         line,
                         file=STDERR_STREAM if write_to_stderr else STDOUT_STREAM,
-                        end=("" if oneline and len(lines) != 1 else "\n")
-                        + TextColor.RESET,
+                        end=("" if oneline else "\n") + TextColor.RESET,
                         flush=True,
                     )
                 else:
@@ -541,11 +540,12 @@ class Cliasi:
             sleep(interval)
 
         sleep(remaining)
-        if not (
+        oneline = (
             self.messages_stay_in_one_line
-            if override_messages_stay_in_one_line is not None
+            if override_messages_stay_in_one_line is None
             else override_messages_stay_in_one_line
-        ):
+        )
+        if not oneline:
             print("")
 
     def __format_progressbar_to_screen_width(
