@@ -85,10 +85,10 @@ Blocking animations run in the main thread and block further execution until com
 .. raw:: html
 
    <div class="asciinema-demo">
-        <img src="_static/asciinema/blocking_animation_demo-light.svg"
+        <img src="_static/asciinema/blocking_animation_demo-light.gif"
           class="asciinema_demo-light"
           alt="Blocking animation (light theme)">
-        <img src="_static/asciinema/blocking_animation_demo-dark.svg"
+        <img src="_static/asciinema/blocking_animation_demo-dark.gif"
           class="asciinema_demo-dark"
           alt="Blocking animation (dark theme)">
    </div>
@@ -113,10 +113,10 @@ Non-Blocking Animation
 .. raw:: html
 
     <div class="asciinema-demo">
-        <img src="_static/asciinema/non_blocking_animation_demo-light.svg"
+        <img src="_static/asciinema/non_blocking_animation_demo-light.gif"
           class="asciinema_demo-light"
           alt="Non Blocking animation (light theme)">
-        <img src="_static/asciinema/non_blocking_animation_demo-dark.svg"
+        <img src="_static/asciinema/non_blocking_animation_demo-dark.gif"
           class="asciinema_demo-dark"
           alt="Non Blocking animation (dark theme)">
    </div>
@@ -141,10 +141,10 @@ Progress Bars
 .. raw:: html
 
     <div class="asciinema-demo">
-        <img src="_static/asciinema/progress_bar_demo-light.svg"
+        <img src="_static/asciinema/progress_bar_demo-light.gif"
           class="asciinema_demo-light"
           alt="Progress Bar (light theme)">
-        <img src="_static/asciinema/progress_bar_demo-dark.svg"
+        <img src="_static/asciinema/progress_bar_demo-dark.gif"
           class="asciinema_demo-dark"
           alt="Progress Bar (dark theme)">
    </div>
@@ -168,10 +168,10 @@ Animated Progress Bars
 .. raw:: html
 
     <div class="asciinema-demo">
-        <img src="_static/asciinema/animated_progress_bar_demo-light.svg"
+        <img src="_static/asciinema/animated_progress_bar_demo-light.gif"
           class="asciinema_demo-light"
           alt="Animated Progress Bar (light theme)">
-        <img src="_static/asciinema/animated_progress_bar_demo-dark.svg"
+        <img src="_static/asciinema/animated_progress_bar_demo-dark.gif"
           class="asciinema_demo-dark"
           alt="Animated Progress Bar (dark theme)">
     </div>
@@ -194,10 +194,10 @@ You can ask for user input, including passwords.
 .. raw:: html
 
     <div class="asciinema-demo">
-        <img src="_static/asciinema/user_input_interactive-light.svg"
+        <img src="_static/asciinema/user_input_interactive-light.gif"
           class="asciinema_demo-light"
           alt="User input (light theme)">
-        <img src="_static/asciinema/user_input_interactive-dark.svg"
+        <img src="_static/asciinema/user_input_interactive-dark.gif"
           class="asciinema_demo-dark"
           alt="User input (dark theme)">
     </div>

@@ -96,22 +96,22 @@ aggconvert:
 	      --speed $(AGG_SPEED) \
 	      "$$cast" "$${base}.gif"; \
 	  else \
-	    echo "  agg $$cast → $${base}-light.svg"; \
+	    echo "  agg $$cast → $${base}-light.gif"; \
 	    agg \
 	      --theme $(AGG_LIGHT_THEME) \
 	      --cols $(AGG_WIDTH) \
 	      --rows $(AGG_ROWS) \
 	      --font-size $(AGG_FONT_SIZE) \
 	      --speed $(AGG_SPEED) \
-	      "$$cast" "$${base}-light.svg"; \
-	    echo "  agg $$cast → $${base}-dark.svg"; \
+	      "$$cast" "$${base}-light.gif"; \
+	    echo "  agg $$cast → $${base}-dark.gif"; \
 	    agg \
 	      --theme $(AGG_DARK_THEME) \
 	      --cols $(AGG_WIDTH) \
 	      --rows $(AGG_ROWS) \
 	      --font-size $(AGG_FONT_SIZE) \
 	      --speed $(AGG_SPEED) \
-	      "$$cast" "$${base}-dark.svg"; \
+	      "$$cast" "$${base}-dark.gif"; \
 	  fi; \
 	done
 
