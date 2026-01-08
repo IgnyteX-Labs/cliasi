@@ -50,7 +50,7 @@ task.stop()
 cli.success("Process quit")
 ```
 
-![readme_demo](docs/source/_static/asciinema/readme_demo-dark.svg)
+![readme_demo](docs/source/_static/asciinema/readme_demo.gif)
 
 ### Catching exceptions
 

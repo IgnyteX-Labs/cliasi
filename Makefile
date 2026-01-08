@@ -86,20 +86,32 @@ aggconvert:
 	@find $(ASCIINEMA_DIR) -name '*.cast' -print0 | \
 	while IFS= read -r -d '' cast; do \
 	  base="$${cast%.cast}"; \
-	  echo "  agg $$cast → $${base}-light.svg"; \
-	  agg \
-	    --theme $(AGG_LIGHT_THEME) \
-	    --cols $(AGG_WIDTH) \
-		--rows $(AGG_ROWS) \
-	    --font-size $(AGG_FONT_SIZE) \
-	    --speed $(AGG_SPEED) \
-	    "$$cast" "$${base}-light.svg"; \
-	  echo "  agg $$cast → $${base}-dark.svg"; \
-	  agg \
-	    --theme $(AGG_DARK_THEME) \
-	    --cols $(AGG_WIDTH) \
-	    --rows $(AGG_ROWS) \
-	    --font-size $(AGG_FONT_SIZE) \
-	    --speed $(AGG_SPEED) \
-	    "$$cast" "$${base}-dark.svg"; \
+	  if [ "$${base##*/}" = "readme_demo" ]; then \
+	    echo "  agg $$cast → $${base}.gif"; \
+	    agg \
+	      --theme $(AGG_DARK_THEME) \
+	      --cols $(AGG_WIDTH) \
+	      --rows $(AGG_ROWS) \
+	      --font-size $(AGG_FONT_SIZE) \
+	      --speed $(AGG_SPEED) \
+	      "$$cast" "$${base}.gif"; \
+	  else \
+	    echo "  agg $$cast → $${base}-light.svg"; \
+	    agg \
+	      --theme $(AGG_LIGHT_THEME) \
+	      --cols $(AGG_WIDTH) \
+	      --rows $(AGG_ROWS) \
+	      --font-size $(AGG_FONT_SIZE) \
+	      --speed $(AGG_SPEED) \
+	      "$$cast" "$${base}-light.svg"; \
+	    echo "  agg $$cast → $${base}-dark.svg"; \
+	    agg \
+	      --theme $(AGG_DARK_THEME) \
+	      --cols $(AGG_WIDTH) \
+	      --rows $(AGG_ROWS) \
+	      --font-size $(AGG_FONT_SIZE) \
+	      --speed $(AGG_SPEED) \
+	      "$$cast" "$${base}-dark.svg"; \
+	  fi; \
 	done
+
