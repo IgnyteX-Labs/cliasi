@@ -582,7 +582,7 @@ class Cliasi:
         # Determine available width for the bar content (inside the brackets)
         total_cols = _terminal_size()
 
-        inside_width = max(8, total_cols - max(0, dead_space) - 2)
+        inside_width = max(8, total_cols - max(0, dead_space) - 3)
 
         # Prepare message to fit, centered, without overlapping percent area
         # Compute the maximum width available for message without touching percent area
