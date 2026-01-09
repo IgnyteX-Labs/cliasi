@@ -32,6 +32,6 @@ __all__ = [
     "install_logger",
     "STDOUT_STREAM",
     "STDERR_STREAM",
-    "SYMBOLS"
+    "SYMBOLS",
     "TextColor",
 ]
