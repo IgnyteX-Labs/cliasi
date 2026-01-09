@@ -1,4 +1,4 @@
-.PHONY: install test lint typecheck docs build clean all casts casts-clean cast-interactive aggconvert help
+.PHONY: install test lint typecheck docs build clean all --overwrite casts casts-clean cast-interactive aggconvert help
 
 # Default target
 all: lint typecheck test
@@ -45,6 +45,16 @@ clean:
 	rm -rf .ruff_cache/
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 
+# Detect optional flags passed as "targets"
+OVERWRITE_FLAG :=
+ifneq (,$(filter --overwrite,$(MAKECMDGOALS)))
+OVERWRITE_FLAG := --overwrite
+endif
+
+# Dummy target so make doesn't error on "--overwrite"
+--overwrite:
+	@:
+
 AGG_WIDTH     ?= 80
 AGG_ROWS     ?= 2
 AGG_FONT_SIZE ?= 14
@@ -61,7 +71,7 @@ casts:
 		base=$$(basename "$$file" .py); \
 		echo "Recording non-interactive cast for $$file..."; \
 		COLUMNS=$(AGG_WIDTH) LINES=$(AGG_ROWS) asciinema rec $(ASCIINEMA_DIR)/$$base.cast \
-			--command "uv run python $$file" --overwrite; \
+			--command "uv run python $$file" $(OVERWRITE_FLAG); \
 	done
 
 casts-interactive:
@@ -72,7 +82,7 @@ casts-interactive:
 				base=$$(basename "$$file" .py); \
 				echo "Recording interactive cast for $$file..."; \
 				COLUMNS=$(AGG_WIDTH) LINES=$(AGG_ROWS) asciinema rec $(ASCIINEMA_DIR)/$$base.cast \
-					--command "uv run python $$file" --overwrite; \
+					--command "uv run python $$file" $(OVERWRITE_FLAG); \
 				;; \
 		esac; \
 	done
