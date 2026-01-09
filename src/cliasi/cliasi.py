@@ -622,16 +622,11 @@ class Cliasi:
         target_fill = round((p / 100.0) * inside_width)
 
         # Fill with '=' from left to right, but never overwrite message or percent
-        filled = 0
-        i = 0
-        while filled < target_fill and i < inside_width:
+        for i in range(target_fill):
             # Skip positions occupied by message
             if msg_start <= i < msg_end:
-                i += 1
                 continue
             bar[i] = "="
-            filled += 1
-            i += 1
 
         # Wrap with brackets
         return "[" + "".join(bar) + "]" + (f" {p}%" if show_percent else "")
