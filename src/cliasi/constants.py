@@ -124,8 +124,8 @@ UNICORN = [
 ]
 """Colors used for unicorn animation in the CLI."""
 
+#: Useful symbols to show in cli
 SYMBOLS: dict[str, str] = {
     "success": "✔",
     "download": "⤓",
 }
-"""Symbols used in the CLI for various statuses."""
