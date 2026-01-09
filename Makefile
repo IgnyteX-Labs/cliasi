@@ -1,4 +1,4 @@
-.PHONY: install test lint typecheck docs build clean all --overwrite casts casts-clean cast-interactive aggconvert help
+.PHONY: install test lint typecheck docs build clean all overwrite casts casts-clean cast-interactive aggconvert help
 
 # Default target
 all: lint typecheck test
@@ -15,9 +15,10 @@ help:
 	@echo "  all        		Run lint, typecheck, and test (default)"
 	@echo "  casts      		Record asciinema casts for the documentation. Requires asciinema installed"
 	@echo "  casts-clean 		Remove generated asciinema SVGs"
+	@echo "  cast-interactive 	Record an interactive asciinema cast"
+	@echo "  overwrite  		Flag to overwrite existing asciinema casts (used with 'casts' target)"
 	@echo "  aggconvert 		Convert asciinema casts to GIFs for the documentation. Requires asciinema-agg installed"
 	@echo "  help       		Show this help message"
-	@echo "  cast-interactive 	Record an interactive asciinema cast"
 
 install:
 	uv sync --group dev
@@ -47,12 +48,12 @@ clean:
 
 # Detect optional flags passed as "targets"
 OVERWRITE_FLAG :=
-ifneq (,$(filter --overwrite,$(MAKECMDGOALS)))
+ifneq (,$(filter overwrite,$(MAKECMDGOALS)))
 OVERWRITE_FLAG := --overwrite
 endif
 
-# Dummy target so make doesn't error on "--overwrite"
---overwrite:
+# Dummy target so make doesn't error on "overwrite"
+overwrite:
 	@:
 
 AGG_WIDTH     ?= 80
@@ -70,8 +71,8 @@ casts:
 	@for file in examples/*_demo.py; do \
 		base=$$(basename "$$file" .py); \
 		echo "Recording non-interactive cast for $$file..."; \
-		COLUMNS=$(AGG_WIDTH) LINES=$(AGG_ROWS) asciinema rec $(ASCIINEMA_DIR)/$$base.cast \
-			--command "uv run python $$file" $(OVERWRITE_FLAG); \
+		COLUMNS=$(AGG_WIDTH) LINES=$(AGG_ROWS) asciinema rec $(OVERWRITE_FLAG) \
+			--command "uv run python $$file" $(ASCIINEMA_DIR)/$$base.cast; \
 	done
 
 casts-interactive:
@@ -81,8 +82,8 @@ casts-interactive:
 			*_interactive.py) \
 				base=$$(basename "$$file" .py); \
 				echo "Recording interactive cast for $$file..."; \
-				COLUMNS=$(AGG_WIDTH) LINES=$(AGG_ROWS) asciinema rec $(ASCIINEMA_DIR)/$$base.cast \
-					--command "uv run python $$file" $(OVERWRITE_FLAG); \
+				COLUMNS=$(AGG_WIDTH) LINES=$(AGG_ROWS) asciinema rec $(OVERWRITE_FLAG) \
+					--command "uv run python $$file" $(ASCIINEMA_DIR)/$$base.cast; \
 				;; \
 		esac; \
 	done
