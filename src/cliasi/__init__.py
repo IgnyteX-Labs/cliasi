@@ -3,7 +3,7 @@
 __author__ = "Qrashi"
 
 from .cliasi import STDERR_STREAM, STDOUT_STREAM, Cliasi, cli
-from .constants import TextColor
+from .constants import SYMBOLS, TextColor
 from .logging_handler import install_exception_hook, install_logger
 
 __version__: str
@@ -32,5 +32,6 @@ __all__ = [
     "install_logger",
     "STDOUT_STREAM",
     "STDERR_STREAM",
+    "SYMBOLS"
     "TextColor",
 ]
