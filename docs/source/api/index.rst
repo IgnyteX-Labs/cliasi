@@ -11,12 +11,14 @@ as well as
 
 * :data:`~cliasi.STDOUT_STREAM`
 * :data:`~cliasi.STDERR_STREAM`
+* :data:`~cliasi.SYMBOLS`
 * :class:`~cliasi.constants.TextColor`
 * :func:`~cliasi.logging_handler.install_logger` (to install it your own way, is done automatically)
 
 .. autodata:: cliasi.cli
 .. autodata:: cliasi.STDOUT_STREAM
 .. autodata:: cliasi.STDERR_STREAM
+.. autodata:: cliasi.SYMBOLS
 
 .. automodule:: cliasi
    :members: Cliasi, TextColor
