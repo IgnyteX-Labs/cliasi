@@ -26,20 +26,37 @@ Install with pip / uv:
 Here is a quick example to get you started:
 
 .. code-block:: python
+  :caption: examples/cliasi_demo.py
 
-    from cliasi import Cliasi
+  from cliasi import Cliasi
 
-    cli = Cliasi(min_verbose_level=20, messages_stay_in_one_line=True, enable_colors=True)
-    cli.success("Installation successful!")
-    cli.set_prefix("hobby_app")
-    progressbar = cli.progressbar_animated_download("Downloading...")
-    # Do some downloading work here...
-    progressbar.update(70)
-    # Finish download
-    progressbar.stop()
-    cli.success("Download complete!")
+  cli = Cliasi(min_verbose_level=20, messages_stay_in_one_line=True, colors=True)
+  cli.success("Installation successful!")
+  cli.set_prefix("hobby_app")
+  progressbar = cli.progressbar_animated_download("Downloading...", show_percent=True)
+  # Do some downloading work here...
+  for i in range(70):
+      do_something()
+      progressbar.update(progress=i)
+  do_task_that_takes_long_time()
+  progressbar.update(progress=100)
+  # Finish download
+  clean_up()
+  progressbar.stop()
+  cli.success("Download complete!")
 
-All of this text will stay in one line.
+.. raw:: html
+
+    <div class="asciinema-demo">
+        <img src="_static/asciinema/cliasi_demo-light.gif"
+          class="asciinema_demo-light"
+          alt="Cliasi basic demo (light theme)">
+        <img src="_static/asciinema/cliasi_demo-dark.gif"
+          class="asciinema_demo-dark"
+          alt="Cliasi basic demo (dark theme)">
+    </div>
+
+All of this text stays in one line.
 
 Why cliasi
 ------------

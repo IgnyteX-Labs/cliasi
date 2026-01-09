@@ -14,7 +14,7 @@ Basic Message Types
 Here is how they look in the console:
 
 .. code-block:: python
-    :caption: basic_messages.py
+    :caption: examples/basic_messages.py
 
     from cliasi import cli
 
@@ -43,7 +43,7 @@ Here is how they look in the console:
 If an exception is raised or a traceback is logged, it will be formatted using the `fail` message style:
 
 .. code-block:: python
-    :caption: exception_message.py
+    :caption: examples/exception_message.py
 
     import cliasi
 
@@ -71,7 +71,7 @@ Blocking Animation
 Blocking animations run in the main thread and block further execution until complete.
 
 .. code-block:: python
-    :caption: blocking_animation.py
+    :caption: examples/blocking_animation.py
 
     from cliasi import cli
     import time
@@ -97,7 +97,7 @@ Non-Blocking Animation
 """""""""""""""""""""""
 
 .. code-block:: python
-    :caption: non_blocking_animation.py
+    :caption: examples/non_blocking_animation.py
 
     import time
 
@@ -125,7 +125,7 @@ Progress Bars
 """"""""""""""""""
 
 .. code-block:: python
-    :caption: progress_bar.py
+    :caption: examples/progress_bar.py
 
     import time
 
@@ -152,7 +152,7 @@ Progress Bars
 Animated Progress Bars
 """"""""""""""""""""""""""
 .. code-block:: python
-    :caption: animated_progress_bar.py
+    :caption: examples/animated_progress_bar.py
 
     import time
 
@@ -182,7 +182,7 @@ User Input
 You can ask for user input, including passwords.
 
 .. code-block:: python
-    :caption: user_input_interactive.py
+    :caption: examples/user_input_interactive.py
 
     from cliasi import cli
 
