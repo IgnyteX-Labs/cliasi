@@ -1,2 +1,0 @@
-# Prevent Git from changing line endings in SVGs
-docs/source/_static/asciinema/*.gif text eol=lf
