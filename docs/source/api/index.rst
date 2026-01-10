@@ -9,10 +9,10 @@ The main interface for ``cliasi``.
 cliasi exports the :class:`~cliasi.Cliasi` instance :data:`~cliasi.cli`
 as well as
 
-* :data:`~cliasi.STDOUT_STREAM`
-* :data:`~cliasi.STDERR_STREAM`
-* :data:`~cliasi.SYMBOLS`
-* :class:`~cliasi.constants.TextColor`
+* :data:`~cliasi.STDOUT_STREAM` standard output stream the library uses
+* :data:`~cliasi.STDERR_STREAM` error stream the library uses
+* :data:`~cliasi.SYMBOLS` collection of useful symbols
+* :class:`~cliasi.constants.TextColor` color storage for terminal text
 * :func:`~cliasi.logging_handler.install_logger` (to install it your own way, is done automatically)
 
 .. py:data:: cliasi.cli
@@ -33,11 +33,14 @@ as well as
 
     Collection of useful symbols
 
-.. automodule:: cliasi
-   :members: Cliasi, TextColor
-   :show-inheritance:
-   :imported-members:
 
+Cliasi instance
+-----------------
+
+.. automodule:: cliasi.cliasi
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 
 Constants (Animations)
