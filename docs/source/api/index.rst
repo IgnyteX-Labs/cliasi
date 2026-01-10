@@ -15,15 +15,17 @@ as well as
 * :class:`~cliasi.constants.TextColor`
 * :func:`~cliasi.logging_handler.install_logger` (to install it your own way, is done automatically)
 
-.. autodata:: cliasi.cli
+.. py:data:: cliasi.cli
     :annotation: global cli instance
+    :type: ~cliasi.cliasi.Cliasi
+
 .. py:data:: cliasi.STDOUT_STREAM
-    :annotation: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='utf-8'>
+    :annotation: io.TextIOWrapper
 
     standard output stream the library uses
 
 .. py:data:: cliasi.STDERR_STREAM
-    :annotation: <_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>
+    :type: io.TextIOWrapper
 
     Error stream the library uses
 
