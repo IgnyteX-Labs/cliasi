@@ -16,9 +16,20 @@ as well as
 * :func:`~cliasi.logging_handler.install_logger` (to install it your own way, is done automatically)
 
 .. autodata:: cliasi.cli
-.. autodata:: cliasi.STDOUT_STREAM
-.. autodata:: cliasi.STDERR_STREAM
-.. autodata:: cliasi.SYMBOLS
+    :annotation: global cli instance
+.. py:data:: cliasi.STDOUT_STREAM
+    :annotation: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='utf-8'>
+
+    standard output stream the library uses
+
+.. py:data:: cliasi.STDERR_STREAM
+    :annotation: <_io.TextIOWrapper name='<stderr>' mode='w' encoding='utf-8'>
+
+    Error stream the library uses
+
+.. py:data:: cliasi.SYMBOLS
+
+    Collection of useful symbols
 
 .. automodule:: cliasi
    :members: Cliasi, TextColor
