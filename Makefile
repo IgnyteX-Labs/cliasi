@@ -34,6 +34,7 @@ typecheck:
 
 docs:
 	uv run --group docs make html -C docs
+	@echo "Documentation built. View at: file://$$(pwd)/docs/build/html/index.html"
 
 build:
 	uv build
