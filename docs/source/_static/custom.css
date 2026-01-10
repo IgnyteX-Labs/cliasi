@@ -1,0 +1,24 @@
+/* --- Dark theme by default --- */
+.asciinema-demo img {
+    width: 100%;
+    height: auto;
+}
+
+/* hide light GIFs by default */
+.asciinema_demo-light {
+    display: none;
+}
+
+/* dark GIFs visible by default */
+.asciinema_demo-dark {
+    display: block;
+}
+
+/* --- Light theme explicitly selected --- */
+body[data-theme="light"] .asciinema_demo-light {
+    display: block;
+}
+
+body[data-theme="light"] .asciinema_demo-dark {
+    display: none;
+}

@@ -1,34 +1,96 @@
-.. cliasi documentation master file, created by f.rader
-   sphinx-quickstart on Mon May 20 19:39:32 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+cliasi
+========
 
-Welcome to the cliasi documentation!
-======================================
+is a tiny command-line interface (CLI) library for Python.
 
-Cliasi is a simple CLI library designed to enhance command-line interfaces with ease. It provides features like verbosity control, colorful outputs, and logging integration.
+It is meant to be simple and easy to use, while providing useful features for building
+hobby project command-line applications. It offers
 
-Get started in a minute using the guide below, or dive into the API reference.
+* Pre-configured global instance for quick usage.
+* support for logging
+* colored output
+* progress bars and animations
+* message types similar to logging
 
-Quick Example:
+Set up:
 --------------
+Install with pip / uv:
+
+.. code-block:: python
+  :substitutions:
+
+  pip install cliasi==|release|
+  uv add cliasi==|release|
+
 
 Here is a quick example to get you started:
 
 .. code-block:: python
+  :caption: examples/cliasi_demo.py
 
-    from cliasi import Cliasi
+  from cliasi import Cliasi
 
-    cli = Cliasi(min_verbose_level=20, messages_stay_in_one_line=True, enable_colors=True)
-    cli.info("Welcome to cliasi!")
+  cli = Cliasi(min_verbose_level=20, messages_stay_in_one_line=True, colors=True)
+  cli.success("Installation successful!")
+  cli.set_prefix("hobby_app")
+  progressbar = cli.progressbar_animated_download("Downloading...", show_percent=True)
+  # Do some downloading work here...
+  for i in range(70):
+      do_something()
+      progressbar.update(progress=i)
+  do_task_that_takes_long_time()
+  progressbar.update(progress=100)
+  # Finish download
+  clean_up()
+  progressbar.stop()
+  cli.success("Download complete!")
+
+.. raw:: html
+
+    <div class="asciinema-demo">
+        <img src="_static/asciinema/cliasi_demo-light.gif"
+          class="asciinema_demo-light"
+          alt="Cliasi basic demo (light theme)">
+        <img src="_static/asciinema/cliasi_demo-dark.gif"
+          class="asciinema_demo-dark"
+          alt="Cliasi basic demo (dark theme)">
+    </div>
+
+All of this text stays in one line.
+
+Why cliasi
+------------
+
+Cliasi is small and primarily designed for basic animations
+and progressbars.
+
+* Minimal API with sensible defaults (see about options here :ref:`instances`).
+* Supports logging levels for verbosity control.
+* Will auto-format exceptions from other libraries :ref:`logging_integration`
+* Wide variety of message types all named unambiguously. :ref:`message_types`
+* Disappearing messages to keep the terminal clean. (:attr:`~cliasi.Cliasi.messages_stay_in_one_line` option)
+* Prefix system to indicate program scope. :ref:`instances`
+
+Note on windows support
+-------------------------
+
+I do not own a windows device so windows support is untested.
+If there are any issues please open an issue on GitHub or
+feel free to open a PR with fixes.
+
+
+Further reading
+"""""""""""""""""
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Guide
+  :maxdepth: 1
+  :caption: Guide
+  :glob:
 
-   getting_started
-   advanced
-   set_up_development_environment
+  cliasi_instance
+  message_types
+  logging_handler
+  development
 
 .. toctree::
    :maxdepth: 2

@@ -2,6 +2,14 @@
 requires = ["setuptools>=61", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.package-data]
+singlejson = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+
 [project]
 name = "cliasi"
 dynamic = ["version"]
@@ -10,7 +18,7 @@ authors = [
 ]
 description = "Have a nice looking, simple cli in seconds"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -21,7 +29,7 @@ license-files = ["LICENSE"]
 [project.urls]
 Homepage = "https://github.com/IgnyteX-Labs/cliasi"
 Issues = "https://github.com/IgnyteX-Labs/cliasi/issues"
-Documentation = "https://ignytex-labs.github.io/cliasi/"
+Documentation = "https://cliasi.readthedocs.io/"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -31,10 +39,40 @@ include = ["cliasi*"]
 write_to = "src/cliasi/__about__.py"
 fallback_version = "0+unknown"
 
-[project.optional-dependencies]
-# Documentation dependencies; install with `pip install .[docs]`
-dev = ["pytest"]
+[dependency-groups]
+test = [
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "ruff>=0.14.10",
+]
 docs = [
+    "sphinx-substitution-extensions>=2025.12.15",
     "sphinx>=7",
     "furo>=2024.1.29",
 ]
+dev = [
+    { include-group = "test" },
+    { include-group = "docs" },
+    "pre-commit>=4.5.1",
+]
+
+[tool.ruff]
+target-version = "py310"
+src = ["src", "tests"]
+exclude = ["**/__about__.py", "docs"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "S101", # use of assert
+    "PLR2004", # magic values
+    "D", # docstrings
+    "E501"
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+

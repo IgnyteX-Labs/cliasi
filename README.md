@@ -1,11 +1,17 @@
 # cliasi (cli easy)
+
+![GitHub issues](https://img.shields.io/github/issues/IgnyteX-Labs/cliasi)
+![PyPI](https://img.shields.io/pypi/v/cliasi)
+
 Output pretty command line text without hassle.
 <br>This is mostly a collection of pretty print commands
 
-View the [documentation here](https://ignytex-labs.github.io/cliasi/).
+View the [documentation here](https://cliasi.readthedocs.io/).
+
 ### Installation
 ```shell
 pip install cliasi
+uv add cliasi
 ```
 
 ## Basic Usage
@@ -21,83 +27,58 @@ cli.messages_stay_in_one_line = True
 cli.info("blah")
 cli.warn("doing something dangerous")
 # > ! [CLI] | doing something dangerous
-
-# You can even ask for input and the input will disappear
-cli.log("Got input: " + cli.ask("Give input: "))
-# > LOG [CLI] | Got input: test
 ```
 
-### Prefix and Cliasi instances
-Sometimes you might want to indicate different parts of your program working.<br>
-You can do that by having another instance of Cliasi with another prefix
-
-```python
-from cliasi import cli, Cliasi  # Default shared Cliasi instance
-
-cli.update_prefix("MANAGE")
-cli.fail("Management failed")
-# > X [MANAGE] | Management failed
-
-def calculate():
-    # Another part of your program could have its own instance
-    clisi = Cliasi("CALC", use_oneline=True)
-    clisi.info("Calculating...")
-    # > i [CALC] | Calculating...
-    # Although it might be better to use other methods for waiting
-```
+Read more about different message types and see visualizations in the documentation
+[here](https://cliasi.readthedocs.io/en/latest/message_types.html).
 
 ### Animations
-Some processes might take a few seconds to complete and you dont know how much the process is done (you cant use a progress bar) <br>
-In that case you can use either a blocking or non blocking animate method.
+
+One of the main features of cliasi is the ability to display animations while waiting
+for something to finish.
 
 ```python
+# File: examples/readme_demo.py
 from cliasi import cli
 
 # This will wait for three seconds and display an animation
-cli.animate_message_blocking("Saving files, press CRTL-C to stop", 3)
-save_data()
-
-# But if you want to wait for something to finish and display something nice in the meantime
-task = cli.animate_message_non_blocking("Waiting for a process to quit")
-# Put your processing logic here
-do_stuff_that_takes_time()
-task.stop()  # Stop the animation
+task = cli.animate_message_non_blocking("Saving files, press CRTL-C to stop")
+do_stuff()
+task.update("Files saved, waiting for process to quit")
+tell_process_to_quit()
+task.stop()
 cli.success("Process quit")
 ```
-![animate_message_nonblocking look in the console](https://github.com/user-attachments/assets/e452fbbc-3eed-42c2-b05d-8f532ca11276)
 
+![readme_demo](docs/source/_static/asciinema/readme_demo.gif)
 
-### Progress Bars
-You can also have a progress bar which adapts to the size of your terminal <br>
-This is the "static" version which you just call whenever you get an update.
+### Catching exceptions
 
-```python
-from cliasi import cli
-
-processed, total = 0, len(calculate_queue)
-while not calculate_queue.is_empty():
-    cli.progressbar("Calculating items...", processed / total)
-    calculate_next_item()
-    processed += 1
-
-cli.success("Calculation complete")
-# This will show a progress bar that will only update when a calculation has finished.
-# Potentially bad if it gets stuck on a calculation
-```
-Or if you want to have the bar be animated while waiting for progress
+cliasi also catches exceptions and displays them in a pretty way.
+This then looks something like this:
 
 ```python
-from cliasi import cli
+# exception_message.py
+import cliasi
 
-task = cli.progressbar_animated_download("Downloading files.")
-download()
-task.update(10)
-# You can also change the message while in the process
-task._message = "Extracting"
-extract()
-task.update(40)
-extract_again()
-
-task.stop()
+# Importing cliasi automatically installs the logging handler
+raise ValueError("An example error")
 ```
-![progressbar_animated_download look in the console](https://github.com/user-attachments/assets/348ddfd8-f1ea-441d-873e-a17e6818fff5)
+
+Example CLI output (uncolored,
+see colored version in
+[docs](https://cliasi.readthedocs.io/en/latest/message_types.html).):
+
+```text
+X [CLI] | Uncaught exception:
+X [CLI] | Traceback (most recent call last):
+        |   File "examples/exception_message.py", line 4, in <module>
+        |     raise ValueError("An example error")
+        | ValueError: An example error
+```
+
+### Contributing:
+
+This is just a fun project of mine mainly to try out python packaging.
+If you would like to contribute or have a feature-request,
+please [open an issue or pull request](https://github.com/Qrashi/cliasi/issues/new).
