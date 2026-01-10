@@ -45,14 +45,12 @@ Constants (Animations)
    :members:
    :undoc-members:
    :show-inheritance:
-   :no-index:
 
 
-``logging`` handler
+logging handler
 --------------------
 
 .. automodule:: cliasi.logging_handler
    :members:
    :undoc-members:
    :show-inheritance:
-   :no-index:
