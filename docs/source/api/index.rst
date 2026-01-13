@@ -36,6 +36,11 @@ as well as
 
 Cliasi instance
 -----------------
+The main cliasi instance exposes various parameters to control behavior:
+
+* :attr:`~cliasi.cliasi.Cliasi.messages_stay_in_one_line` - wether messages should stay in one line
+* :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` - verbosity level
+* :attr:`~cliasi.cliasi.Cliasi.enable_colors` - whether to use colored output
 
 .. automodule:: cliasi.cliasi
    :members:
