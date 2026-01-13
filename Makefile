@@ -1,13 +1,14 @@
-.PHONY: install test lint typecheck docs build clean all overwrite casts casts-clean cast-interactive aggconvert help
+.PHONY: install test lint format typecheck docs build clean all overwrite casts casts-clean cast-interactive aggconvert help
 
 # Default target
-all: lint typecheck test
+check: lint format typecheck test
 
 help:
 	@echo "Available targets:"
 	@echo "  install    		Install dependencies"
 	@echo "  test       		Run tests"
 	@echo "  lint       		Run lint checks"
+	@echo "  format     		Format code"
 	@echo "  typecheck  		Run type checks"
 	@echo "  docs       		Build documentation"
 	@echo "  build      		Build the package"
@@ -25,12 +26,19 @@ install:
 
 test:
 	uv run pytest
+	@echo "pytest complete"
 
 lint:
 	uv run ruff check
+	@echo "ruff check complete"
+
+format:
+	uv run ruff format .
+	@echo "ruff format complete"
 
 typecheck:
 	uv run mypy src
+	@echo "typecheck complete"
 
 docs:
 	uv run --group docs make html -C docs
