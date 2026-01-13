@@ -67,7 +67,7 @@ raise ValueError("An example error")
 
 Example CLI output (uncolored,
 see colored version in
-[docs](https://cliasi.readthedocs.io/en/latest/message_types.html).):
+[docs](https://cliasi.readthedocs.io/en/latest/message_types.html)):
 
 ```text
 X [CLI] | Uncaught exception:

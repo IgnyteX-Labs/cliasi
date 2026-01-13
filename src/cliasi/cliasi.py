@@ -137,7 +137,7 @@ class Cliasi:
         color: TextColor | str,
         symbol: str,
         message: str,
-        override_messages_stay_in_one_line: bool | None,
+        messages_stay_in_one_line: bool | None,
         color_message: bool = True,
         write_to_stderr: bool = False,
     ) -> None:
@@ -147,16 +147,17 @@ class Cliasi:
         :param color: Color to print message and symbol
         :param symbol: Symbol to print at start of message
         :param message: Message to print
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :param color_message: Print the main message with color
         :param write_to_stderr: Write message to stderr instead of stdout
         :return: None
         """
         oneline = (
             self.messages_stay_in_one_line
-            if override_messages_stay_in_one_line is None
-            else override_messages_stay_in_one_line
+            if messages_stay_in_one_line is None
+            else messages_stay_in_one_line
         )
         content_space = _terminal_size() - (
             self.__space_before_message + len(symbol) + 1
@@ -208,15 +209,16 @@ class Cliasi:
         self,
         message: str,
         verbosity: int = logging.INFO,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a message in format # [prefix] message
 
         :param message: Message to send
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -226,7 +228,7 @@ class Cliasi:
             TextColor.WHITE + TextColor.DIM,
             "#",
             message,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
             color_message=False,
         )
 
@@ -234,7 +236,7 @@ class Cliasi:
         self,
         message: str,
         verbosity: int = logging.INFO,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Print an informational message.
@@ -242,8 +244,9 @@ class Cliasi:
 
         :param message: Message to send
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -253,7 +256,7 @@ class Cliasi:
             TextColor.BRIGHT_WHITE,
             "i",
             message,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
             color_message=False,
         )
 
@@ -261,15 +264,16 @@ class Cliasi:
         self,
         message: str,
         verbosity: int = logging.DEBUG,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a log message in format LOG [prefix] message
 
         :param message: Message to log
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -279,7 +283,7 @@ class Cliasi:
             TextColor.WHITE + TextColor.DIM,
             "LOG",
             message,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
             color_message=False,
         )
 
@@ -287,15 +291,16 @@ class Cliasi:
         self,
         message: str,
         verbosity: int = logging.DEBUG,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a log message in format LOG [prefix] message
 
         :param message: Message to log
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -305,7 +310,7 @@ class Cliasi:
             TextColor.WHITE + TextColor.DIM,
             "L",
             message,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
             color_message=False,
         )
 
@@ -313,15 +318,16 @@ class Cliasi:
         self,
         message: str,
         verbosity: int = logging.INFO,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a list style message in format * [prefix] message
 
         :param message: Message to send
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -331,7 +337,7 @@ class Cliasi:
             TextColor.BRIGHT_WHITE,
             "-",
             message,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
             color_message=False,
         )
 
@@ -339,37 +345,37 @@ class Cliasi:
         self,
         message: str,
         verbosity: int = logging.WARNING,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a warning message in format ! [prefix] message
 
         :param message: Message to send
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
             return
 
-        self.__print(
-            TextColor.BRIGHT_YELLOW, "!", message, override_messages_stay_in_one_line
-        )
+        self.__print(TextColor.BRIGHT_YELLOW, "!", message, messages_stay_in_one_line)
 
     def fail(
         self,
         message: str,
         verbosity: int = logging.CRITICAL,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a failure message in format X [prefix] message
 
         :param message: Message to send
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -379,7 +385,7 @@ class Cliasi:
             TextColor.BRIGHT_RED,
             "X",
             message,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
             write_to_stderr=True,
         )
 
@@ -387,23 +393,22 @@ class Cliasi:
         self,
         message: str,
         verbosity: int = logging.INFO,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a success message in format ✔ [prefix] message
 
         :param message: Message to send
         :param verbosity: Verbosity of this message
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
         if self.__verbose_check(verbosity):
             return
 
-        self.__print(
-            TextColor.BRIGHT_GREEN, "✔", message, override_messages_stay_in_one_line
-        )
+        self.__print(TextColor.BRIGHT_GREEN, "✔", message, messages_stay_in_one_line)
 
     @staticmethod
     def newline() -> None:
@@ -418,15 +423,16 @@ class Cliasi:
         self,
         message: str,
         hide_input: bool = False,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> str:
         """
         Ask for input in format ? [prefix] message
 
         :param message: Question to ask
         :param hide_input: True hides user input
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: The user input as a string.
         """
 
@@ -442,8 +448,8 @@ class Cliasi:
             result = input(" ")
         oneline = (
             self.messages_stay_in_one_line
-            if override_messages_stay_in_one_line is None
-            else override_messages_stay_in_one_line
+            if messages_stay_in_one_line is None
+            else messages_stay_in_one_line
         )
         if oneline:
             print("\x1b[1A\x1b[2K", end="")
@@ -481,7 +487,7 @@ class Cliasi:
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Display a loading animation for a fixed time
@@ -492,8 +498,9 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param interval: Interval between changes in loading animation
         :param unicorn: Enable unicorn mode
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
 
@@ -512,7 +519,7 @@ class Cliasi:
                 f"CLIASI error: "
                 f"Animation frames must be a list, got {type(frames).__name__}."
                 f" Falling back to default frames.",
-                override_messages_stay_in_one_line=False,
+                messages_stay_in_one_line=False,
             )
         animation_frames: list[str] = frames if isinstance(frames, list) else ["*", "-"]
         index_total = 0
@@ -523,7 +530,7 @@ class Cliasi:
                     f"CLIASI error: "
                     f"frame_every must be an int, got {type(frame_every_val).__name__}."
                     f" Falling back to 1.",
-                    override_messages_stay_in_one_line=False,
+                    messages_stay_in_one_line=False,
                 )
             frame_every: int = (
                 frame_every_val if isinstance(frame_every_val, int) else 1
@@ -547,8 +554,8 @@ class Cliasi:
         sleep(remaining)
         oneline = (
             self.messages_stay_in_one_line
-            if override_messages_stay_in_one_line is None
-            else override_messages_stay_in_one_line
+            if messages_stay_in_one_line is None
+            else messages_stay_in_one_line
         )
         if not oneline:
             print("")
@@ -636,7 +643,7 @@ class Cliasi:
         message: str,
         verbosity: int = logging.INFO,
         progress: int = 0,
-        override_messages_stay_in_one_line: bool | None = True,
+        messages_stay_in_one_line: bool | None = True,
         show_percent: bool = False,
     ) -> None:
         """
@@ -647,8 +654,9 @@ class Cliasi:
         :param message: Message to display
         :param verbosity: Verbosity to display
         :param progress: Progress to display
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :param show_percent: Show percent next to the progressbar
         :return: None
         """
@@ -656,14 +664,14 @@ class Cliasi:
         if self.__verbose_check(verbosity):
             return
         # Print the bar.
-        # Keep it on one line unless overridden by override_messages_stay_in_one_line.
+        # Keep it on one line unless overridden by messages_stay_in_one_line.
         self.__print(
             TextColor.BLUE,
             "#",
             self.__format_progressbar_to_screen_width(
                 message, "#", progress, show_percent
             ),
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
         )
 
     def progressbar_download(
@@ -672,7 +680,7 @@ class Cliasi:
         verbosity: int = logging.INFO,
         progress: int = 0,
         show_percent: bool = False,
-        override_messages_stay_in_one_line: bool | None = True,
+        messages_stay_in_one_line: bool | None = True,
     ) -> None:
         """
         Display a download bar with specified progress
@@ -682,8 +690,9 @@ class Cliasi:
         :param verbosity: Verbosity to display
         :param progress: Progress to display
         :param show_percent: Show percent next to the progressbar
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: None
         """
 
@@ -696,7 +705,7 @@ class Cliasi:
             self.__format_progressbar_to_screen_width(
                 message, "⤓", progress, show_percent
             ),
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
         )
 
     class NonBlockingAnimationTask:
@@ -749,7 +758,7 @@ class Cliasi:
         main_animation: dict[str, int | builtins.list[str]],
         interval: int | float,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = True,
+        messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingAnimationTask:
         """
         Create an animation task
@@ -761,7 +770,7 @@ class Cliasi:
         :param main_animation: The main animation to display as string frames in a list
         :param interval: The interval to display as string frames in a list
         :param unicorn: Enable unicorn mode
-        :param override_messages_stay_in_one_line: Override message to stay in one line
+        :param messages_stay_in_one_line: Override message to stay in one line
         :return A NonBlockingAnimationTask
         """
         condition = Event()
@@ -769,8 +778,8 @@ class Cliasi:
         task = Cliasi.NonBlockingAnimationTask(
             message,
             condition,
-            override_messages_stay_in_one_line
-            if override_messages_stay_in_one_line is not None
+            messages_stay_in_one_line
+            if messages_stay_in_one_line is not None
             else self.messages_stay_in_one_line,
         )
 
@@ -786,7 +795,7 @@ class Cliasi:
                     f"CLIASI error: "
                     f"Animation frames must be a list, got {type(frames_val).__name__}."
                     f" Falling back to default frames.",
-                    override_messages_stay_in_one_line=False,
+                    messages_stay_in_one_line=False,
                 )
             frames: list[str] = (
                 frames_val if isinstance(frames_val, list) else ["*", "-"]
@@ -797,7 +806,7 @@ class Cliasi:
                     f"CLIASI error: "
                     f"frame_every must be an int, got {type(frame_every_val).__name__}."
                     f" Falling back to 1.",
-                    override_messages_stay_in_one_line=False,
+                    messages_stay_in_one_line=False,
                 )
             frame_every: int = (
                 frame_every_val if isinstance(frame_every_val, int) else 1
@@ -833,7 +842,7 @@ class Cliasi:
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
     ) -> NonBlockingAnimationTask | None:
         """
         Display a loading animation in the background
@@ -843,8 +852,9 @@ class Cliasi:
         :param verbosity: Verbosity of message
         :param interval: Interval for animation to play
         :param unicorn: Enable unicorn mode
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: NonBlockingAnimationTask if verbosity requirement is met.
         """
 
@@ -862,7 +872,7 @@ class Cliasi:
             ANIMATIONS_MAIN[selection_animation],
             interval,
             unicorn,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
         )
 
     def animate_message_download_non_blocking(
@@ -871,7 +881,7 @@ class Cliasi:
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = True,
+        messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingAnimationTask | None:
         """
         Display a downloading animation in the background
@@ -880,8 +890,9 @@ class Cliasi:
         :param verbosity: Verbosity of message
         :param interval: Interval for animation to play
         :param unicorn: Enable unicorn mode
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: A NonBlockingAnimationTask if verbosity requirement is met.
         """
 
@@ -898,7 +909,7 @@ class Cliasi:
             ANIMATIONS_MAIN[selection_animation],
             interval,
             unicorn,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
         )
 
     class NonBlockingProgressTask(NonBlockingAnimationTask):
@@ -912,12 +923,10 @@ class Cliasi:
             self,
             message: str,
             stop_condition: Event,
-            override_messages_stay_in_one_line: bool,
+            messages_stay_in_one_line: bool,
             progress: int,
         ) -> None:
-            super().__init__(
-                message, stop_condition, override_messages_stay_in_one_line
-            )
+            super().__init__(message, stop_condition, messages_stay_in_one_line)
             self._progress = progress
 
         def update(
@@ -966,7 +975,7 @@ class Cliasi:
         interval: int | float,
         color: TextColor,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = True,
+        messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingProgressTask:
         """
         Get a progressbar task
@@ -978,8 +987,9 @@ class Cliasi:
         :param interval: Interval for animation to play
         :param color: Color of progressbar
         :param unicorn: Enable unicorn mode
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
         :return: NonBlockingProgressTask
         """
 
@@ -988,8 +998,8 @@ class Cliasi:
         task = Cliasi.NonBlockingProgressTask(
             message,
             condition,
-            override_messages_stay_in_one_line
-            if override_messages_stay_in_one_line is not None
+            messages_stay_in_one_line
+            if messages_stay_in_one_line is not None
             else self.messages_stay_in_one_line,
             progress,
         )
@@ -1035,7 +1045,7 @@ class Cliasi:
         interval: int | float = 0.25,
         show_percent: bool = False,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = True,
+        messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingProgressTask:
         """
         Display an animated progressbar
@@ -1047,8 +1057,9 @@ class Cliasi:
         :param progress: Current Progress to display
         :param show_percent: Show percent next to the progressbar
         :param unicorn: Enable unicorn mode
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
 
         :return:
             :class:`NonBlockingProgressTask` on which you can call
@@ -1070,7 +1081,7 @@ class Cliasi:
             interval,
             TextColor.BLUE,
             unicorn,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
         )
 
     def progressbar_animated_download(
@@ -1081,7 +1092,7 @@ class Cliasi:
         interval: int | float = 0.25,
         show_percent: bool = False,
         unicorn: bool = False,
-        override_messages_stay_in_one_line: bool | None = True,
+        messages_stay_in_one_line: bool | None = True,
     ) -> NonBlockingProgressTask:
         """
         Display an animated progressbar
@@ -1093,8 +1104,9 @@ class Cliasi:
         :param progress: Current Progress to display
         :param show_percent: Show percent next to the progressbar
         :param unicorn: Enable unicorn mode
-        :param override_messages_stay_in_one_line:
+        :param messages_stay_in_one_line:
             Override the message to stay in one line
+            (None to use cliasi instance setting)
 
         :return:
             :class:`NonBlockingProgressTask` on which you can call
@@ -1116,7 +1128,7 @@ class Cliasi:
             interval,
             TextColor.BRIGHT_CYAN,
             unicorn,
-            override_messages_stay_in_one_line,
+            messages_stay_in_one_line,
         )
 
 
