@@ -204,3 +204,26 @@ You can ask for user input, including passwords.
           class="asciinema_demo-dark"
           alt="User input (dark theme)">
     </div>
+
+.. _message_alignment:
+
+Message alignment
+------------------
+You can align messages to the left, right, or center of the terminal.
+
+Almost all message types support alignment
+with the ``message_left``, ``message_right``, and ``message_center`` parameters.
+
+You can either set the corresponding parameters to ``True``,
+or set the parameters themselves to the desired text.
+
+.. code-block:: python
+    :caption: examples/message_alignment.py
+
+    from cliasi import cli
+
+    cli.info("This is a left-aligned message.")  # Default is left-aligned
+    cli.success("This is a right-aligned message.", message_right=True)
+    cli.warn(False, message_center="This is a centered message.")
+    # False because parameter message_left is required to be set.
+    cli.info("From left", message_center="to the middle", message_right="to the right")

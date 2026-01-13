@@ -9,6 +9,7 @@ hobby project command-line applications. It offers
 * Pre-configured global instance for quick usage.
 * support for logging
 * colored output
+* left, right and centered text alignment
 * progress bars and animations
 * message types similar to logging
 
@@ -43,7 +44,7 @@ Here is a quick example to get you started:
   # Finish download
   clean_up()
   progressbar.stop()
-  cli.success("Download complete!")
+  cli.success("Download complete!", right="100%")
 
 .. raw:: html
 
@@ -68,6 +69,7 @@ and progressbars.
 * Supports logging levels for verbosity control.
 * Will auto-format exceptions from other libraries :ref:`logging_integration`
 * Wide variety of message types all named unambiguously. :ref:`message_types`
+* Text alignment options for messages. :ref:`message_alignment`
 * Disappearing messages to keep the terminal clean. (:attr:`~cliasi.Cliasi.messages_stay_in_one_line` option)
 * Prefix system to indicate program scope. :ref:`instances`
 

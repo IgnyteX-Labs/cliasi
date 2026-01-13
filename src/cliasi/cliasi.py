@@ -136,19 +136,33 @@ class Cliasi:
         self,
         color: TextColor | str,
         symbol: str,
-        message: str,
+            message_left: str | bool,
         override_messages_stay_in_one_line: bool | None,
+            centered: str | bool = False,
+            right: str | bool = False,
         color_message: bool = True,
         write_to_stderr: bool = False,
     ) -> None:
         """
-        Print message to console with word wrapping and customizable separators.
+        Print message to the console with word wrapping and customizable separators.
+        If parameters left, center, and right are None, this will do nothing.
 
-        :param color: Color to print message and symbol
-        :param symbol: Symbol to print at start of message
-        :param message: Message to print
+        :param color: Color to print message and symbol with (ASCII escape code)
+        :param symbol: Symbol to print at the start of the message
+        :param message_left:
+            Message or bool flag to print on left side of terminal
+            If messages dont fit into their sections, they will be outputted one
+            after the other thus destroying any alignment.
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
+        :param centered:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections, they will be outputted one
+            after the other thus destroying any alignment.
+        :param right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections, they will be outputted one
+            after the other thus destroying any alignment.
         :param color_message: Print the main message with color
         :param write_to_stderr: Write message to stderr instead of stdout
         :return: None
@@ -165,7 +179,7 @@ class Cliasi:
 
         lines = []
 
-        for paragraph in message.splitlines():
+        for paragraph in message_left.splitlines():
             wrapped = textwrap.wrap(paragraph, width=content_space)
             if wrapped:
                 lines.extend(wrapped)
@@ -177,6 +191,7 @@ class Cliasi:
             for line in lines:
                 index += 1
                 if index == 1:
+                    # Printing first / last line
                     print(
                         "\r\x1b[2K\r",
                         (color if self.enable_colors else "") + symbol,
@@ -189,6 +204,8 @@ class Cliasi:
                         flush=True,
                     )
                 else:
+                    # Printing multiline strings
+                    # prefix, and symbol are replaced with spaces
                     print(
                         "\r\x1b[2K\r",
                         # space (done because new print function argument)
@@ -641,7 +658,7 @@ class Cliasi:
     ) -> None:
         """
         Display a progress bar with specified progress
-        This requires grabbing correct terminal width
+        This requires grabbing the correct terminal width
         This is not animated. Call it multiple times to update
 
         :param message: Message to display
