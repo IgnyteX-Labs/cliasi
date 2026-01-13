@@ -43,7 +43,7 @@ Here is how they look in the console:
 
 Exception and Traceback Formatting
 """""""""""""""""""""""""""""""""""""
-If an exception is raised or a traceback is logged, it will be formatted using the `fail` message style:
+If an exception is raised or a traceback is logged, it will be formatted using the ``fail`` message style:
 
 .. code-block:: python
     :caption: examples/exception_message.py
