@@ -15,4 +15,4 @@ progressbar.update(progress=100)
 # Finish download
 sleep(1)  # originally clean_up()
 progressbar.stop()
-cli.success("Download complete!")
+cli.success("Download complete!", message_right="100%")

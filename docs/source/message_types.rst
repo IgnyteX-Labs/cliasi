@@ -227,10 +227,12 @@ You can either set the corresponding parameters to ``True``,
 or set the parameters themselves to the desired text.
 
 .. note::
-    If the left message goes to far and covers the middle one
+    If the left message goes too far and covers the middle one
     or is too long or has newlines, all aligned will be printed
-    one after the other except for ``right`` aligned text (will
-    attempt to print to the right of the last line).
+    one after the other with as many lines as it takes.
+
+    Cliasi will attempt to put ``message_right`` to the right at the end of
+    messages that go over multiple lines, but this is not always possible.
 
 
 .. code-block:: python

@@ -44,7 +44,7 @@ Here is a quick example to get you started:
   # Finish download
   clean_up()
   progressbar.stop()
-  cli.success("Download complete!", right="100%")
+  cli.success("Download complete!", message_right="100%")
 
 .. raw:: html
 

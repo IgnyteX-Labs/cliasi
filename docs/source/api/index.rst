@@ -41,7 +41,7 @@ The main cliasi instance exposes various parameters to control behavior:
 
 * :attr:`~cliasi.cliasi.Cliasi.messages_stay_in_one_line` - weather messages should stay in one line, see :ref:`instances`
 * :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` - verbosity level, see :ref:`instances`
-* :attr:`~cliasi.cliasi.Cliasi.enable_colors` - whether to use colored output
+* :attr:`~cliasi.cliasi.Cliasi.enable_colors` - weather to use colored output
 * :attr:`~cliasi.cliasi.Cliasi.max_dead_space` - maximum number of empty space between aligned messages :ref:`max_dead_space`
 
 .. automodule:: cliasi.cliasi

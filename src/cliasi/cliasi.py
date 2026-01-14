@@ -38,7 +38,7 @@ try:
 
     def _terminal_size() -> int:
         return shutil.get_terminal_size(fallback=(cols, rows))[0] - 1
-        # - 1 to avoid printing progress to the max.
+        # - 1 to avoid printing to the terminal edge.
         # [0] for cols
 
     _terminal_size()  # Try if getting terminal size works
@@ -160,7 +160,7 @@ class Cliasi:
         :param symbol: Symbol to print at the start of the message
         :param message_left:
             Message or bool flag to print on left side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -168,13 +168,13 @@ class Cliasi:
             Override the message to stay in one line
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -207,25 +207,25 @@ class Cliasi:
         content_total += message_center if isinstance(message_center, str) else ""
         content_total += message_right if isinstance(message_right, str) else ""
 
-        seperating_space = (
+        separating_space = (
             1 if (isinstance(message_left, str) and message_left != "") else 0
         )
-        seperating_space += (
+        separating_space += (
             1 if (isinstance(message_center, str) and message_center != "") else 0
         )
-        seperating_space += (
+        separating_space += (
             1 if (isinstance(message_right, str) and message_right != "") else 0
         )
 
-        seperating_space -= 1  # elements - 1 = seperating_space
+        separating_space -= 1  # elements - 1 = separating_space
 
         lines = []
 
         if content_total == "":
             # Nothing to print
             return None
-        # content_space - seperating space (needed to separate left, right etc)
-        if (content_space - seperating_space) < len(
+        # content_space - separating space (needed to separate left, right etc)
+        if (content_space - separating_space) < len(
             content_total
         ) or "\n" in content_total:
             # Can't print in one line.
@@ -327,7 +327,7 @@ class Cliasi:
             if (
                 isinstance(self.max_dead_space, int)  # Logic is enabled
                 and message_left is not False  # Left message not disabled deliberately
-                and (content_space - len(content_total) - seperating_space)
+                and (content_space - len(content_total) - separating_space)
                 > self.max_dead_space
             ):
                 # Too much dead space, print one after the other
@@ -431,13 +431,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -477,13 +477,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -522,13 +522,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -567,13 +567,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -612,13 +612,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -657,13 +657,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -701,13 +701,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -746,13 +746,13 @@ class Cliasi:
         :param verbosity: Verbosity of this message
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -800,13 +800,13 @@ class Cliasi:
         :param hide_input: True hides user input
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -869,13 +869,13 @@ class Cliasi:
             See message_center and message_right for details.
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -918,13 +918,13 @@ class Cliasi:
         :param time: Time to display for
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -1061,14 +1061,14 @@ class Cliasi:
             if not message_len or width <= 0:
                 return bar_chars, occupied, width, False
 
-            seperating_space = (
+            separating_space = (
                 (1 if m_left else 0) + (1 if m_center else 0) + (1 if m_right else 0)
             )
-            seperating_space = max(0, seperating_space - 1)
+            separating_space = max(0, separating_space - 1)
             content_total = m_left + m_center + m_right
             truncated = False
 
-            if len(content_total) + seperating_space > width:
+            if len(content_total) + separating_space > width:
                 # Need to truncate
                 combined = (
                     m_left
@@ -1092,7 +1092,7 @@ class Cliasi:
             dead_space_too_large = (
                 isinstance(self.max_dead_space, int)
                 and message_left is not False
-                and (width - len(content_total) - seperating_space)
+                and (width - len(content_total) - separating_space)
                 > self.max_dead_space
             )
 
@@ -1198,7 +1198,7 @@ class Cliasi:
     def progressbar(
         self,
         message_left: str | bool,
-        message_center: str | bool = True,
+        message_center: str | bool = False,
         message_right: str | bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
@@ -1208,14 +1208,13 @@ class Cliasi:
         """
         Display a progress bar with specified progress
         This is not animated. Call it multiple times to update
-        Message is shown centered by default (message_center=True)
 
         :param message_left:
             Message to display on the left side of the bar
-            or bool flag to enable /disable
+            or bool flag to enable / disable
         :param message_center:
             Message to display in the center of the bar
-            or bool flag to enable /disable (default True)
+            or bool flag to enable / disable
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
@@ -1243,7 +1242,7 @@ class Cliasi:
     def progressbar_download(
         self,
         message_left: str | bool,
-        message_center: str | bool = True,
+        message_center: str | bool = False,
         message_right: str | bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
@@ -1253,14 +1252,13 @@ class Cliasi:
         """
         Display a download bar with specified progress
         This is not animated. Call it multiple times to update
-        Message is shown centered by default (message_center=True)
 
         :param message_left:
             Message to display on the left side of the bar
-            or bool flag to enable /disable
+            or bool flag to enable / disable
         :param message_center:
             Message to display in the center of the bar
-            or bool flag to enable /disable (default True)
+            or bool flag to enable / disable
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
@@ -1373,13 +1371,13 @@ class Cliasi:
             See message_center and message_right for details.
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -1478,13 +1476,13 @@ class Cliasi:
             See message_center and message_right for details.
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -1533,13 +1531,13 @@ class Cliasi:
             See message_center and message_right for details.
         :param message_center:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
         :param message_right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections
+            If messages do not fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
@@ -1728,7 +1726,7 @@ class Cliasi:
     def progressbar_animated_normal(
         self,
         message_left: str | bool,
-        message_center: str | bool = True,
+        message_center: str | bool = False,
         message_right: str | bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
@@ -1740,14 +1738,13 @@ class Cliasi:
         """
         Display an animated progressbar
         Update progress using the returned Task object
-        Message is shown centered by default (message_center=True)
 
         :param message_left:
             Message to display on the left side of the bar
-            or bool flag to enable /disable
+            or bool flag to enable / disable
         :param message_center:
             Message to display in the center of the bar
-            or bool flag to enable /disable (default True)
+            or bool flag to enable / disable
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
@@ -1799,14 +1796,13 @@ class Cliasi:
         """
         Display an animated progressbar
         Update progress using the returned Task object
-        Message is shown centered by default (message_center=True)
 
         :param message_left:
             Message to display on the left side of the bar
-            or bool flag to enable /disable
+            or bool flag to enable / disable
         :param message_center:
             Message to display in the center of the bar
-            or bool flag to enable /disable (default True)
+            or bool flag to enable / disable
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
