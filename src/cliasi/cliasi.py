@@ -136,10 +136,10 @@ class Cliasi:
         self,
         color: TextColor | str,
         symbol: str,
-            message_left: str | bool,
+        message_left: str | bool,
         override_messages_stay_in_one_line: bool | None,
-            centered: str | bool = False,
-            right: str | bool = False,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         color_message: bool = True,
         write_to_stderr: bool = False,
     ) -> None:
@@ -157,13 +157,13 @@ class Cliasi:
             thus destroying any alignment.
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
-        :param centered:
+        :param message_center:
             Message or bool flag to print centered to terminal
             If messages dont fit into their sections
             or messages are multiline, they will be outputted one
             after the other (except for right aligned content)
             thus destroying any alignment.
-        :param right:
+        :param message_right:
             Message or bool flag to print on right side of terminal
             If messages dont fit into their sections
             or messages are multiline, they will be outputted one
@@ -183,14 +183,132 @@ class Cliasi:
         )  # Space left for content per line
         # space(1) + symbol + space_before_message (prefix + seperator) -> message
 
+        reset_message_left = False
+        if isinstance(message_center, bool) and message_center:
+            # flag set
+            message_center = message_left
+            reset_message_left = True
+        if isinstance(message_right, bool) and message_right:
+            # flag set
+            message_right = message_left
+            reset_message_left = True
+        if reset_message_left:
+            message_left = ""
+
+        content_total = message_left if isinstance(message_left, str) else ""
+        content_total += message_center if isinstance(message_center, str) else ""
+        content_total += message_right if isinstance(message_right, str) else ""
+
+        seperating_space = (
+            1 if (isinstance(message_left, str) and message_left != "") else 0
+        )
+        seperating_space += (
+            1 if (isinstance(message_center, str) and message_center != "") else 0
+        )
+        seperating_space += (
+            1 if (isinstance(message_right, str) and message_right != "") else 0
+        )
+
+        seperating_space -= 1  # elements - 1 = seperating_space
+
         lines = []
 
-        for paragraph in message_left.splitlines():
-            wrapped = textwrap.wrap(paragraph, width=content_space)
-            if wrapped:
-                lines.extend(wrapped)
+        if content_total == "":
+            # Nothing to print
+            return
+        # content_space - seperating space (needed to separate left, right etc)
+        if (content_space - seperating_space) < len(
+            content_total
+        ) or "\n" in content_total:
+            # Can't print in one line.
+            content_to_split = message_left if isinstance(message_left, str) else ""
+            content_to_split += (
+                message_center if isinstance(message_center, str) else ""
+            )
+            if (
+                isinstance(message_right, str)
+                and (
+                    len(message_right) > content_space  # too long -> no alignment
+                    or "\n" in message_right  # multiline -> no alignment attempt
+                )
+                # Only take if message_right won't be aligned due to it being multiline
+            ):
+                content_to_split += message_right
+
+                for paragraph in content_to_split.splitlines():
+                    wrapped = textwrap.wrap(paragraph, width=content_space)
+                    if wrapped:
+                        lines.extend(wrapped)
+                    else:
+                        lines.append("")
+
+                # right aligned content not alignable -> no alignment.
+                # we are done test_right_multiline_too_long
+
             else:
-                lines.append("")
+                # right message might be alignable
+                for paragraph in content_to_split.splitlines():
+                    wrapped = textwrap.wrap(paragraph, width=content_space)
+                    if wrapped:
+                        lines.extend(wrapped)
+                    else:
+                        lines.append("")
+                # left and center are together in one string
+                # see if the last line has space for right message_right
+                if (
+                    isinstance(message_right, str)
+                    and len(lines[-1]) + len(message_right) + 1 <= content_space
+                ):
+                    # Alignment possible on the last row
+                    lines[-1] = (
+                        lines[-1]
+                        + " " * (content_space - len(lines[-1]) - len(message_right))
+                        + message_right
+                    )
+
+                    # right_aligned content aligned on last line
+                    # we are done test_right_fit_last_line
+
+                elif isinstance(message_right, str):
+                    # Alignment not possible, append message_right
+                    for paragraph in (lines.pop() + " " + message_right).splitlines():
+                        wrapped = textwrap.wrap(paragraph, width=content_space)
+                        if wrapped:
+                            lines.extend(wrapped)
+                        else:
+                            lines.append("")
+
+                    # right aligned content not alignable -> no alignment.
+                    # we are done test_right_no_fit_last_line
+
+        else:
+            # All content is alignable in one line
+            m_left = message_left if isinstance(message_left, str) else ""
+            m_center = message_center if isinstance(message_center, str) else ""
+            m_right = message_right if isinstance(message_right, str) else ""
+
+            line = m_left
+            current_pos = len(m_left)
+
+            if m_center:
+                center_start = (content_space - len(m_center)) // 2
+                needed_space = 1 if m_left else 0
+                if center_start >= current_pos + needed_space:
+                    line += " " * (center_start - current_pos) + m_center
+                    current_pos = center_start + len(m_center)
+                else:
+                    line += (" " if m_left else "") + m_center
+                    current_pos = len(line)
+
+            if m_right:
+                right_start = content_space - len(m_right)
+                needed_space = 1 if (m_left or m_center) else 0
+                if right_start >= current_pos + needed_space:
+                    line += " " * (right_start - current_pos) + m_right
+                else:
+                    line += (" " if (m_left or m_center) else "") + m_right
+
+            lines.append(line)
 
         with _print_lock:
             index = 0
@@ -229,15 +347,19 @@ class Cliasi:
 
     def message(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.INFO,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a message in format # [prefix] message
 
-        :param message: Message to send
+        :param message_left: Message to send
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -248,23 +370,29 @@ class Cliasi:
         self.__print(
             TextColor.WHITE + TextColor.DIM,
             "#",
-            message,
+            message_left,
             override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
             color_message=False,
         )
 
     def info(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.INFO,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Print an informational message.
         Send an info message in format i [prefix] message
 
-        :param message: Message to send
+        :param message_left: Message to send
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -275,22 +403,28 @@ class Cliasi:
         self.__print(
             TextColor.BRIGHT_WHITE,
             "i",
-            message,
+            message_left,
             override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
             color_message=False,
         )
 
     def log(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.DEBUG,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a log message in format LOG [prefix] message
 
-        :param message: Message to log
+        :param message_left: Message to log
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -301,22 +435,28 @@ class Cliasi:
         self.__print(
             TextColor.WHITE + TextColor.DIM,
             "LOG",
-            message,
+            message_left,
             override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
             color_message=False,
         )
 
     def log_small(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.DEBUG,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a log message in format LOG [prefix] message
 
-        :param message: Message to log
+        :param message_left: Message to log
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -327,22 +467,28 @@ class Cliasi:
         self.__print(
             TextColor.WHITE + TextColor.DIM,
             "L",
-            message,
+            message_left,
             override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
             color_message=False,
         )
 
     def list(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.INFO,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a list style message in format * [prefix] message
 
-        :param message: Message to send
+        :param message_left: Message to send
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -353,22 +499,28 @@ class Cliasi:
         self.__print(
             TextColor.BRIGHT_WHITE,
             "-",
-            message,
+            message_left,
             override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
             color_message=False,
         )
 
     def warn(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.WARNING,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a warning message in format ! [prefix] message
 
-        :param message: Message to send
+        :param message_left: Message to send
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -377,20 +529,29 @@ class Cliasi:
             return
 
         self.__print(
-            TextColor.BRIGHT_YELLOW, "!", message, override_messages_stay_in_one_line
+            TextColor.BRIGHT_YELLOW,
+            "!",
+            message_left,
+            override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
         )
 
     def fail(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.CRITICAL,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a failure message in format X [prefix] message
 
-        :param message: Message to send
+        :param message_left: Message to send
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -401,22 +562,28 @@ class Cliasi:
         self.__print(
             TextColor.BRIGHT_RED,
             "X",
-            message,
+            message_left,
             override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
             write_to_stderr=True,
         )
 
     def success(
         self,
-        message: str,
+        message_left: str | bool,
         verbosity: int = logging.INFO,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
         Send a success message in format ✔ [prefix] message
 
-        :param message: Message to send
+        :param message_left: Message to send
         :param verbosity: Verbosity of this message
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -425,7 +592,12 @@ class Cliasi:
             return
 
         self.__print(
-            TextColor.BRIGHT_GREEN, "✔", message, override_messages_stay_in_one_line
+            TextColor.BRIGHT_GREEN,
+            "✔",
+            message_left,
+            override_messages_stay_in_one_line,
+            message_center=message_center,
+            message_right=message_right,
         )
 
     @staticmethod
@@ -439,15 +611,19 @@ class Cliasi:
 
     def ask(
         self,
-        message: str,
+        message_left: str | bool,
         hide_input: bool = False,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> str:
         """
         Ask for input in format ? [prefix] message
 
-        :param message: Question to ask
+        :param message_left: Question to ask
         :param hide_input: True hides user input
+        :param message_center: Message to center
+        :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: The user input as a string.
@@ -456,8 +632,10 @@ class Cliasi:
         self.__print(
             TextColor.BRIGHT_MAGENTA if hide_input else TextColor.MAGENTA,
             "?",
-            message,
+            message_left,
             True,
+            message_center=message_center,
+            message_right=message_right,
         )
         if hide_input:
             result = getpass(" ")
