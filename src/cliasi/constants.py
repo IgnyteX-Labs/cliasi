@@ -7,7 +7,7 @@ This module defines animations and default settings for the CLI.
 import sys
 
 if sys.version_info >= (3, 11):
-    from enum import StrEnum
+    from enum import Enum, StrEnum
 else:
     from enum import Enum
 
@@ -90,6 +90,14 @@ ANIMATION_SYMBOLS_PROGRESSBAR: dict[str, list[list[str]]] = {
 
 DEFAULT_TERMINAL_SIZE: int = 80
 """Default terminal size used for CLI rendering."""
+
+
+class CursorPos(Enum):
+    """Cursor positions for for user input"""
+
+    LEFT = 0
+    CENTER = 1
+    RIGHT = 2
 
 
 class TextColor(StrEnum):

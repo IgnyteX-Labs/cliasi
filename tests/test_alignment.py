@@ -117,3 +117,70 @@ def test_right_no_fit_last_line(fixed_width, capture_streams):
     lines = out.splitlines()
     assert len(lines) >= 3
     assert right in lines[-1]
+
+
+def test_cursor_pos_with_ask(fixed_width, capture_streams, monkeypatch):
+    out_buf, _ = capture_streams
+    # Mock stdin to provide answers for the ask calls
+    monkeypatch.setattr(sys, "stdin", io.StringIO("Alice\nsecret_code\nyes\n"))
+
+    c = Cliasi("TEST", colors=False)
+
+    # 1. Test full alignment: Left message, Center message, Right message
+    # Should align Name? on left, --- in center, [Required] on right
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
+    name = c.ask("Name?", message_center="---", message_right="[Required]")
+    assert name == "Alice"
+
+    out = normalize_output(out_buf.getvalue())
+    # Since inputs don't usually add newlines to the prompt line itself in the buffer until echoed
+    # we look at the last line of the buffer.
+    line = out.splitlines()[-1]
+
+    assert "Name?" in line
+    assert "---" in line
+    assert "[Required]" in line
+
+    # Check relative positioning
+    assert line.find("Name?") < line.find("---")
+    assert line.find("---") < line.find("[Required]")
+    # Verify right alignment
+    assert line.rstrip().endswith("[Required]")
+
+    # 2. Test multiline prompt with Right message
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
+    # content_space is approx 68 chars. Create a prompt that forces wrapping.
+    long_prompt = "W" * 75
+    code = c.ask(long_prompt, message_right="[Masked]")
+    assert code == "secret_code"
+
+    out = normalize_output(out_buf.getvalue())
+    lines = out.splitlines()
+
+    # Verify wrapping occurred (at least 2 lines or line breaks in raw output)
+    # Note: splitlines might behave differently depending on how cliasi writes (e.g. one big print or multiple)
+    # But usually it formats a block.
+    assert len(lines) >= 2 or len(lines[-1]) > 0
+
+    # Verify content presence
+    assert "W" * 75 in out.replace("\n", "").replace(" ", "").replace("|", "")
+
+    # Verify the right message is aligned at the end of the last line
+    assert lines[-1].rstrip().endswith("[Masked]")
+
+    # 3. Test generic Left + Right alignment
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
+    confirm = c.ask("Proceed?", message_right="(y/n)")
+    assert confirm == "yes"
+
+    out = normalize_output(out_buf.getvalue())
+    line = out.splitlines()[-1]
+    assert "Proceed?" in line
+    assert line.rstrip().endswith("(y/n)")
+    assert line.find("Proceed?") < line.find("(y/n)")

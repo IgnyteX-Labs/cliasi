@@ -15,6 +15,7 @@ from .constants import (
     ANIMATIONS_SYMBOLS,
     DEFAULT_TERMINAL_SIZE,
     UNICORN,
+    CursorPos,
     TextColor,
 )
 
@@ -142,7 +143,7 @@ class Cliasi:
         message_right: str | bool = False,
         color_message: bool = True,
         write_to_stderr: bool = False,
-    ) -> None:
+    ) -> dict[str, int] | None:
         """
         Print message to the console with word wrapping and customizable separators.
         If parameters left, center, and right are None, this will do nothing.
@@ -171,16 +172,15 @@ class Cliasi:
             thus destroying any alignment.
         :param color_message: Print the main message with color
         :param write_to_stderr: Write message to stderr instead of stdout
-        :return: None
+        :return: Metadata about the printed line (alignments) or None
         """
         oneline = (
             self.messages_stay_in_one_line
             if override_messages_stay_in_one_line is None
             else override_messages_stay_in_one_line
         )
-        content_space = _terminal_size() - (
-            self.__space_before_message + len(symbol) + 1
-        )  # Space left for content per line
+        preamble_len = self.__space_before_message + len(symbol) + 1
+        content_space = _terminal_size() - preamble_len
         # space(1) + symbol + space_before_message (prefix + seperator) -> message
 
         reset_message_left = False
@@ -213,27 +213,41 @@ class Cliasi:
 
         lines = []
 
+        left_end = 0
+        center_end = 0
+        right_end = 0
+
         if content_total == "":
             # Nothing to print
-            return
+            return None
         # content_space - seperating space (needed to separate left, right etc)
         if (content_space - seperating_space) < len(
             content_total
         ) or "\n" in content_total:
             # Can't print in one line.
-            content_to_split = message_left if isinstance(message_left, str) else ""
-            content_to_split += (
-                message_center if isinstance(message_center, str) else ""
-            )
-            if (
-                isinstance(message_right, str)
-                and (
-                    len(message_right) > content_space  # too long -> no alignment
-                    or "\n" in message_right  # multiline -> no alignment attempt
-                )
-                # Only take if message_right won't be aligned due to it being multiline
+            content_to_split = ""
+            if isinstance(message_left, str):
+                content_to_split += message_left
+            if isinstance(message_center, str):
+                content_to_split += (
+                    " " + message_center
+                    if isinstance(message_left, str) and message_left != ""
+                    else message_center
+                )  # Add space only if message_left is set
+            if isinstance(message_right, str) and (
+                len(message_right) > content_space  # too long -> no alignment
+                or "\n" in message_right  # multiline -> no alignment attempt
             ):
-                content_to_split += message_right
+                # message_right won't be aligned due to it being multiline
+                content_to_split += (
+                    " " + message_right
+                    if (
+                        (isinstance(message_left, str) and message_left != "")
+                        or (isinstance(message_center, str) and message_center != "")
+                        # Only if one of the previous ones exists
+                    )
+                    else message_right
+                )
 
                 for paragraph in content_to_split.splitlines():
                     wrapped = textwrap.wrap(paragraph, width=content_space)
@@ -243,6 +257,10 @@ class Cliasi:
                         lines.append("")
 
                 # right aligned content not alignable -> no alignment.
+                left_end = len(lines[-1])
+                center_end = len(lines[-1])
+                right_end = len(lines[-1])
+                # CursorPos alignment not possible because message_right is multiline
                 # we are done test_right_multiline_too_long
 
             else:
@@ -260,6 +278,8 @@ class Cliasi:
                     and len(lines[-1]) + len(message_right) + 1 <= content_space
                 ):
                     # Alignment possible on the last row
+                    left_end = len(lines[-1])  # left and center end at len of last line
+                    center_end = len(lines[-1])
                     lines[-1] = (
                         lines[-1]
                         + " " * (content_space - len(lines[-1]) - len(message_right))
@@ -267,7 +287,9 @@ class Cliasi:
                     )
 
                     # right_aligned content aligned on last line
-                    # we are done test_right_fit_last_line
+                    right_end = len(lines[-1])
+                # CursorPos alignment not possible because message_right is multiline
+                # we are done test_right_fit_last_line
 
                 elif isinstance(message_right, str):
                     # Alignment not possible, append message_right
@@ -279,7 +301,19 @@ class Cliasi:
                             lines.append("")
 
                     # right aligned content not alignable -> no alignment.
+                    left_end = len(lines[-1])
+                    center_end = len(lines[-1])
+                    right_end = len(lines[-1])
+                    # CursorPos alignment not possible because message_right got
+                    # multiline due to left + center being too long
                     # we are done test_right_no_fit_last_line
+
+                else:
+                    left_end = len(lines[-1])
+                    center_end = len(lines[-1])
+                    right_end = len(lines[-1])
+
+            #
 
         else:
             # All content is alignable in one line
@@ -288,25 +322,29 @@ class Cliasi:
             m_right = message_right if isinstance(message_right, str) else ""
 
             line = m_left
-            current_pos = len(m_left)
+            left_end = len(line)
 
             if m_center:
                 center_start = (content_space - len(m_center)) // 2
                 needed_space = 1 if m_left else 0
-                if center_start >= current_pos + needed_space:
-                    line += " " * (center_start - current_pos) + m_center
-                    current_pos = center_start + len(m_center)
+                if center_start >= len(line) + needed_space:
+                    line += " " * (center_start - len(line)) + m_center
                 else:
                     line += (" " if m_left else "") + m_center
-                    current_pos = len(line)
+                center_end = len(line)
+            else:
+                center_end = left_end
 
             if m_right:
                 right_start = content_space - len(m_right)
                 needed_space = 1 if (m_left or m_center) else 0
-                if right_start >= current_pos + needed_space:
-                    line += " " * (right_start - current_pos) + m_right
+                if right_start >= len(line) + needed_space:
+                    line += " " * (right_start - len(line)) + m_right
                 else:
                     line += (" " if (m_left or m_center) else "") + m_right
+                right_end = len(line)
+            else:
+                right_end = center_end
 
             lines.append(line)
 
@@ -314,6 +352,9 @@ class Cliasi:
             index = 0
             for line in lines:
                 index += 1
+                is_last = index == len(lines)
+                end_str = ("" if (oneline and is_last) else "\n") + TextColor.RESET
+
                 if index == 1:
                     # Printing first / last line
                     print(
@@ -324,7 +365,7 @@ class Cliasi:
                         + (color if self.enable_colors and color_message else ""),
                         line,
                         file=STDERR_STREAM if write_to_stderr else STDOUT_STREAM,
-                        end=("" if oneline else "\n") + TextColor.RESET,
+                        end=end_str,
                         flush=True,
                     )
                 else:
@@ -341,9 +382,16 @@ class Cliasi:
                         self.__prefix_seperator,
                         (color if self.enable_colors and color_message else "") + line,
                         file=STDERR_STREAM if write_to_stderr else STDOUT_STREAM,
-                        end="\n" + TextColor.RESET,
+                        end=end_str,
                         flush=True,
                     )
+
+        return {
+            "left_end": preamble_len + left_end,
+            "center_end": preamble_len + center_end,
+            "right_end": preamble_len + right_end,
+            "total_length": preamble_len + len(lines[-1]),
+        }
 
     def message(
         self,
@@ -616,6 +664,7 @@ class Cliasi:
         message_center: str | bool = False,
         message_right: str | bool = False,
         override_messages_stay_in_one_line: bool | None = None,
+        cursor_position: CursorPos = CursorPos.LEFT,
     ) -> str:
         """
         Ask for input in format ? [prefix] message
@@ -626,10 +675,15 @@ class Cliasi:
         :param message_right: Message to right align
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
+        :param cursor_position:
+            Cursor position of input cursor
+            Only available when output is not longer than one line OR
+            if last line has space for message_right and the cursor position
+            is LEFT or RIGHT
         :return: The user input as a string.
         """
 
-        self.__print(
+        metadata = self.__print(
             TextColor.BRIGHT_MAGENTA if hide_input else TextColor.MAGENTA,
             "?",
             message_left,
@@ -637,6 +691,16 @@ class Cliasi:
             message_center=message_center,
             message_right=message_right,
         )
+
+        if metadata and cursor_position != CursorPos.RIGHT:
+            target = (
+                metadata["left_end"]
+                if cursor_position == CursorPos.LEFT
+                else metadata["center_end"]
+            )
+            walk_back = metadata["total_length"] - target
+            if walk_back > 0:
+                print(f"\x1b[{walk_back}D", end="", flush=True)
         if hide_input:
             result = getpass(" ")
         else:

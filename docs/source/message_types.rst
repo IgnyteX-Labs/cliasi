@@ -184,13 +184,16 @@ User Input
 
 You can ask for user input, including passwords.
 
+If you use any form of alignment, you can use the ``cursor_position`` parameter
+to specify where the input cursor should be placed after the text has been printed.
+
 .. code-block:: python
     :caption: examples/user_input_interactive.py
 
     from cliasi import cli
 
     name = cli.ask("What is your name?")
-    code = cli.ask("Enter your secret code:", hide_input=True)
+    code = cli.ask("Enter your secret code:", hide_input=True, message_right="[login]")
 
     cli.info(f"Hello, {name} with code {code}")
 
