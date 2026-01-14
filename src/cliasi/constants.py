@@ -85,7 +85,7 @@ ANIMATIONS_MAIN: list[dict[str, int | list[str]]] = [
 
 ANIMATION_SYMBOLS_PROGRESSBAR: dict[str, list[list[str]]] = {
     "default": ANIMATIONS_SYMBOLS,
-    "download": [["🢓", "↧", "⭣", "⯯", "⤓", "⩡", "_", "_"]],
+    "download": [["°", "↧", "⭣", "⯯", "⤓", "⩡", "_", "_"]],
 }
 
 DEFAULT_TERMINAL_SIZE: int = 80
@@ -93,7 +93,8 @@ DEFAULT_TERMINAL_SIZE: int = 80
 
 
 class CursorPos(Enum):
-    """Cursor positions for for user input"""
+    """Cursor positions for user input
+    Useful in :meth:`~cliasi.cliasi.Cliasi.ask()` method."""
 
     LEFT = 0
     CENTER = 1
