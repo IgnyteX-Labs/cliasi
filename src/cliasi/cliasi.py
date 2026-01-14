@@ -37,7 +37,8 @@ try:
     rows = int(os.environ.get("LINES", 24))
 
     def _terminal_size() -> int:
-        return shutil.get_terminal_size(fallback=(cols, rows))[0]
+        return shutil.get_terminal_size(fallback=(cols, rows))[0] - 1
+        # - 1 to avoid printing progress to the max.
         # [0] for cols
 
     _terminal_size()  # Try if getting terminal size works
