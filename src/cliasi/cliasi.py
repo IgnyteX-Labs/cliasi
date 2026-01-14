@@ -151,18 +151,24 @@ class Cliasi:
         :param symbol: Symbol to print at the start of the message
         :param message_left:
             Message or bool flag to print on left side of terminal
-            If messages dont fit into their sections, they will be outputted one
-            after the other thus destroying any alignment.
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :param centered:
             Message or bool flag to print centered to terminal
-            If messages dont fit into their sections, they will be outputted one
-            after the other thus destroying any alignment.
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param right:
             Message or bool flag to print on right side of terminal
-            If messages dont fit into their sections, they will be outputted one
-            after the other thus destroying any alignment.
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param color_message: Print the main message with color
         :param write_to_stderr: Write message to stderr instead of stdout
         :return: None

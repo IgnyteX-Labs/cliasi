@@ -217,6 +217,13 @@ with the ``message_left``, ``message_right``, and ``message_center`` parameters.
 You can either set the corresponding parameters to ``True``,
 or set the parameters themselves to the desired text.
 
+.. note::
+    If the left message goes to far and covers the middle one
+    or is too long or has newlines, all aligned will be printed
+    one after the other except for ``right`` aligned text (will
+    attempt to print to the right of the last line).
+
+
 .. code-block:: python
     :caption: examples/message_alignment.py
 
