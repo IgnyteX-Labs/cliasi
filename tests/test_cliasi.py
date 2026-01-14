@@ -292,7 +292,7 @@ def test_null_task_is_safe_for_animations_when_verbosity_suppressed(capture_stre
     assert task1 is not None
     # Call update with and without message multiple times; must not raise
     task1.update()
-    task1.update(message="Still hidden")
+    task1.update(message_left="Still hidden")
     task1.stop()
     task1.stop()  # idempotent
 
@@ -302,7 +302,7 @@ def test_null_task_is_safe_for_animations_when_verbosity_suppressed(capture_stre
     )
     assert task2 is not None
     task2.update()
-    task2.update(message="Still hidden DL")
+    task2.update(message_left="Still hidden DL")
     task2.stop()
     task2.stop()
 
@@ -326,7 +326,7 @@ def test_null_task_is_safe_for_progressbars_when_verbosity_suppressed(
     # update with and without progress must not raise; stop idempotent
     pb1.update()
     pb1.update(progress=20)
-    pb1.update(message="noop", progress=30)
+    pb1.update(message_left="noop", progress=30)
     pb1.stop()
     pb1.stop()
 
@@ -500,3 +500,55 @@ def test_install_logger_replaces_stream_handlers():
         for h in old_handlers:
             root.addHandler(h)
         root.setLevel(old_level)
+
+
+def test_progressbar_alignment_left_center_right(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 40)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "Left", "Center", "Right", "#", 100, False
+    )
+    inside = bar[1 : bar.index("]")]
+    assert "Left" in inside and "Center" in inside and "Right" in inside
+    assert inside.find("Left") < inside.find("Center") < inside.find("Right")
+    assert inside.rstrip().endswith("Right=")
+
+
+def test_progressbar_truncates_with_ellipsis_and_shows_percent(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 20)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "A" * 8, "B" * 6, "C" * 6, "#", 10, False
+    )
+    inside = bar[1 : bar.index("]")]
+    assert "…" in inside
+    assert len(inside) <= 8
+    assert bar.rstrip().endswith("%")
+
+
+def test_progressbar_forces_percent_when_message_long(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 25)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "ABCDEFGHIJ", "", "", "#", 42, False
+    )
+    assert "42%" in bar
+    # Message may truncate; ensure at least part remains
+    assert "[" in bar and "]" in bar
+
+
+def test_progressbar_fill_respects_message(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width("MSG", "", "", "#", 100, True)
+    inside = bar[1 : bar.index("]")]
+    assert "MSG" in inside
+    assert inside.count("=") == len(inside) - len("MSG")

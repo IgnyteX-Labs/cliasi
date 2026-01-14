@@ -4,9 +4,9 @@ API Reference
 Top-level package
 -----------------
 
-The main interface for ``cliasi``.
+The main interface for :mod:`~cliasi.cliasi`.
 
-cliasi exports the :class:`~cliasi.Cliasi` instance :data:`~cliasi.cli`
+cliasi exports the :class:`~cliasi.cliasi.Cliasi` instance :data:`~cliasi.cli`
 as well as
 
 * :data:`~cliasi.STDOUT_STREAM` standard output stream the library uses

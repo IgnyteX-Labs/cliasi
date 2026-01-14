@@ -67,7 +67,7 @@ class Cliasi:
         colors: bool = True,
         min_verbose_level: int | None = None,
         seperator: str = "|",
-        max_dead_space: int | None = 100,
+        max_dead_space: int | None = 150,
     ):
         """
         Initialize a cliasi instance.
@@ -200,7 +200,7 @@ class Cliasi:
             message_right = message_left
             reset_message_left = True
         if reset_message_left:
-            message_left = ""
+            message_left = False
 
         content_total = message_left if isinstance(message_left, str) else ""
         content_total += message_center if isinstance(message_center, str) else ""
@@ -994,13 +994,25 @@ class Cliasi:
             print("")
 
     def __format_progressbar_to_screen_width(
-        self, message: str, symbol: str, progress: int, show_percent: bool
+        self,
+        message_left: str | bool,
+        message_center: str | bool,
+        message_right: str | bool,
+        symbol: str,
+        progress: int,
+        show_percent: bool,
     ) -> str:
         """
         Returns a string representation of the progress bar
         Like this [====message===] xx%
+        If the text is too long, it will get cut off. Percentage will then be shown.
 
-        :param message: Message to display
+        :param message_left:
+            Message to display on the left side of the bar or bool flag to disable
+        :param message_center:
+            Message to display in the center of the bar or bool flag to disable
+        :param message_right:
+            Message to display on the right side of the bar or bool flag to disable
         :param symbol: Symbol to get symbol length
         :param progress: Progress to display
         :param show_percent: Show percentage at end of bar
@@ -1010,70 +1022,183 @@ class Cliasi:
             p = int(progress)
         except ValueError:
             p = 0
-        dead_space = (
-            1
-            + len(symbol)
-            + self.__space_before_message
-            + (len(f" {p}%") if show_percent else 0)
-        )
-        # space(1)
-        # + symbol
-        # + space_before_message (prefix + seperator) -> message
-        # (+ space + percent if needed)
+        p = max(0, min(100, p))
 
-        # Clamp progress
-        p = max(0, min(100, progress))
+        # Apply left/center/right flag semantics similar to __print
+        reset_message_left = False
+        if isinstance(message_center, bool) and message_center:
+            message_center = message_left
+            reset_message_left = True
+        if isinstance(message_right, bool) and message_right:
+            message_right = message_left
+            reset_message_left = True
+        if reset_message_left:
+            message_left = False
 
-        # Determine available width for the bar content (inside the brackets)
-        total_cols = _terminal_size()
+        m_left = message_left if isinstance(message_left, str) else ""
+        m_center = message_center if isinstance(message_center, str) else ""
+        m_right = message_right if isinstance(message_right, str) else ""
 
-        inside_width = max(8, total_cols - max(0, dead_space) - 3)
+        message_len = len(m_left) + len(m_center) + len(m_right)
 
-        # Prepare message to fit, centered, without overlapping percent area
-        # Compute the maximum width available for message without touching percent area
-        max_message_width = max(0, inside_width)
-        msg = message if message is not None else ""
-        if len(msg) > max_message_width:
-            # Truncate with ellipsis if possible
-            if max_message_width >= 3:
-                msg = msg[: max_message_width - 1] + "…"
-            else:
-                msg = msg[:max_message_width]
-        M = len(msg)
+        def build_bar(
+            show_percent_flag: bool,
+        ) -> tuple[list[str], set[int], int, bool]:
+            percent_suffix = f" {p}%" if show_percent_flag else ""
+            width = max(
+                8,
+                _terminal_size()
+                - max(
+                    0,
+                    1 + len(symbol) + self.__space_before_message + len(percent_suffix),
+                )
+                - 3,
+            )
 
-        # Determine message start so that it is centered within the space
-        # that excludes the percent area on the far right
-        # We consider the layout as: [ left | message | middle | percent | right(end) ]
-        # Center message within the first (inside_width - percent_len) columns
-        usable_width = inside_width
-        msg_start = max(0, (usable_width - M) // 2)
-        msg_end = msg_start + M
+            bar_chars = [" "] * width
+            occupied: set[int] = set()
+            if not message_len or width <= 0:
+                return bar_chars, occupied, width, False
 
-        # Build a base array of spaces
-        bar = [" "] * inside_width
+            seperating_space = (
+                (1 if m_left else 0) + (1 if m_center else 0) + (1 if m_right else 0)
+            )
+            seperating_space = max(0, seperating_space - 1)
+            content_total = m_left + m_center + m_right
+            truncated = False
 
-        # Place message
-        if M > 0:
-            bar[msg_start:msg_end] = list(msg)
+            if len(content_total) + seperating_space > width:
+                # Need to truncate
+                combined = (
+                    m_left
+                    + (" " if m_left and m_center else "")
+                    + m_center
+                    + (" " if (m_left or m_center) and m_right else "")
+                    + m_right
+                )
+                truncated = True
+                if width >= 3:
+                    combined = combined[: width - 1] + "…"
+                else:
+                    combined = combined[:width]
+                for idx, ch in enumerate(combined):
+                    if idx >= width:
+                        break
+                    bar_chars[idx] = ch
+                    occupied.add(idx)
+                return bar_chars, occupied, width, truncated
 
-        # Place percent text at the very end
+            dead_space_too_large = (
+                isinstance(self.max_dead_space, int)
+                and message_left is not False
+                and (width - len(content_total) - seperating_space)
+                > self.max_dead_space
+            )
 
-        # Compute how many cells should be marked as progressed
-        target_fill = round((p / 100.0) * inside_width)
+            if dead_space_too_large:
+                # Dead space too large, print one after the other
+                cursor = 0
+                for m in (m_left, m_center, m_right):
+                    if not m:
+                        continue
+                    if cursor < width:
+                        bar_chars[cursor] = " "
+                        cursor += 1
+                    for idx, ch in enumerate(m):
+                        pos = cursor + idx
+                        if pos >= width:
+                            break
+                        bar_chars[pos] = ch
+                        occupied.add(pos)
+                    cursor += len(m)
+                return bar_chars, occupied, width, truncated
+            # All three messages have space, align them
 
-        # Fill with '=' from left to right, but never overwrite message or percent
-        for i in range(target_fill):
-            # Skip positions occupied by message
-            if msg_start <= i < msg_end:
+            current_end = 0
+            if m_left:
+                left_padding = 1 if width > 1 else 0
+                start = left_padding
+                for idx, ch in enumerate(m_left):
+                    pos = start + idx
+                    if pos >= width:
+                        break
+                    bar_chars[pos] = ch
+                    occupied.add(pos)
+                current_end = start + len(m_left)
+
+            if m_center:
+                center_start = max(0, (width - len(m_center)) // 2)
+                needed_space = 1 if m_left else 0
+                if center_start < (current_end + needed_space):
+                    # center message directly after left message
+                    if m_left and current_end < width:
+                        bar_chars[current_end] = " "
+                        occupied.add(current_end)
+                        current_end += 1
+                    center_start = current_end
+                for idx, ch in enumerate(m_center):
+                    pos = center_start + idx
+                    if pos >= width:
+                        break
+                    bar_chars[pos] = ch
+                    occupied.add(pos)
+                current_end = max(current_end, center_start + len(m_center))
+
+            if m_right:
+                needed_space = 1 if (m_left or m_center) else 0
+                trailing_space = 1 if width > len(m_right) else 0
+                right_start = max(0, width - len(m_right) - trailing_space)
+                if right_start < current_end + needed_space:
+                    if (m_left or m_center) and current_end < width:
+                        bar_chars[current_end] = " "
+                        occupied.add(current_end)
+                        current_end += 1
+                    right_start = current_end
+                for idx, ch in enumerate(m_right):
+                    pos = right_start + idx
+                    if pos >= width:
+                        break
+                    bar_chars[pos] = ch
+                    occupied.add(pos)
+                # trailing space stays unoccupied so fill can reach the end
+
+            return bar_chars, occupied, width, truncated
+
+        bar_chars, occupied, inside_width, was_truncated = build_bar(show_percent)
+
+        force_percent = False
+        if message_len and inside_width > 0 and (message_len / inside_width) >= 0.7:
+            force_percent = True
+        effective_show_percent = show_percent or was_truncated or force_percent
+
+        if effective_show_percent and not show_percent:
+            bar_chars, occupied, inside_width, was_truncated = build_bar(True)
+
+        fillable = max(0, inside_width - len(occupied))
+        target_fill = round((p / 100.0) * fillable)
+
+        filled = 0
+        index = 0
+        while filled < target_fill and index < inside_width:
+            if index in occupied:
+                index += 1
                 continue
-            bar[i] = "="
+            bar_chars[index] = "="
+            filled += 1
+            index += 1
 
-        # Wrap with brackets
-        return "[" + "".join(bar) + "]" + (f" {p}%" if show_percent else "")
+        return (
+            "["
+            + "".join(bar_chars)
+            + "]"
+            + (f" {p}%" if effective_show_percent else "")
+        )
 
     def progressbar(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool = True,
+        message_right: str | bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         override_messages_stay_in_one_line: bool | None = True,
@@ -1081,10 +1206,18 @@ class Cliasi:
     ) -> None:
         """
         Display a progress bar with specified progress
-        This requires grabbing the correct terminal width
         This is not animated. Call it multiple times to update
+        Message is shown centered by default (message_center=True)
 
-        :param message: Message to display
+        :param message_left:
+            Message to display on the left side of the bar
+            or bool flag to enable /disable
+        :param message_center:
+            Message to display in the center of the bar
+            or bool flag to enable /disable (default True)
+        :param message_right:
+            Message to display on the right side of the bar
+            or bool flag to enable / disable
         :param verbosity: Verbosity to display
         :param progress: Progress to display
         :param override_messages_stay_in_one_line:
@@ -1101,14 +1234,16 @@ class Cliasi:
             TextColor.BLUE,
             "#",
             self.__format_progressbar_to_screen_width(
-                message, "#", progress, show_percent
+                message_left, message_center, message_right, "#", progress, show_percent
             ),
             override_messages_stay_in_one_line,
         )
 
     def progressbar_download(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool = True,
+        message_right: str | bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         show_percent: bool = False,
@@ -1117,8 +1252,17 @@ class Cliasi:
         """
         Display a download bar with specified progress
         This is not animated. Call it multiple times to update
+        Message is shown centered by default (message_center=True)
 
-        :param message: Message to display
+        :param message_left:
+            Message to display on the left side of the bar
+            or bool flag to enable /disable
+        :param message_center:
+            Message to display in the center of the bar
+            or bool flag to enable /disable (default True)
+        :param message_right:
+            Message to display on the right side of the bar
+            or bool flag to enable / disable
         :param verbosity: Verbosity to display
         :param progress: Progress to display
         :param show_percent: Show percent next to the progressbar
@@ -1134,7 +1278,7 @@ class Cliasi:
             TextColor.BRIGHT_CYAN,
             "⤓",
             self.__format_progressbar_to_screen_width(
-                message, "⤓", progress, show_percent
+                message_left, message_center, message_right, "⤓", progress, show_percent
             ),
             override_messages_stay_in_one_line,
         )
@@ -1180,14 +1324,32 @@ class Cliasi:
             if not self._message_stays_in_one_line:
                 print("")
 
-        def update(self, message: str | None = None) -> None:
+        def update(
+            self,
+            message_left: str | bool | None = None,
+            message_center: str | bool | None = None,
+            message_right: str | bool | None = None,
+        ) -> None:
             """
             Update message of animation
 
-            :param message: Message to update to (None for no update)
+            :param message_left:
+                Message or bool flag to update to (None for no update)
+            :param message_center:
+                Message or bool flag to update to (None for no update)
+            :param message_right:
+                Message or bool flag to update to (None for no update)
             :return: None
             """
-            self._message_left = message if message is not None else self._message_left
+            self._message_left = (
+                message_left if message_left is not None else self._message_left
+            )
+            self._message_center = (
+                message_center if message_center is not None else self._message_center
+            )
+            self._message_right = (
+                message_right if message_right is not None else self._message_right
+            )
             self._update()
 
     def __get_animation_task(
@@ -1415,24 +1577,27 @@ class Cliasi:
 
         def __init__(
             self,
-            message: str,
+            message_left: str | bool,
+            message_center: str | bool,
+            message_right: str | bool,
             stop_condition: Event,
             override_messages_stay_in_one_line: bool,
             progress: int,
         ) -> None:
             super().__init__(
-                message,
-                False,
-                False,
+                message_left,
+                message_center,
+                message_right,
                 stop_condition,
                 override_messages_stay_in_one_line,
             )
-            # alignment currently not supported in progressbars
             self._progress = progress
 
         def update(
             self,
-            message: str | None = None,
+            message_left: str | bool | None = None,
+            message_center: str | bool | None = None,
+            message_right: str | bool | None = None,
             progress: int | None = None,
             *args: object,
             **kwargs: object,
@@ -1440,12 +1605,14 @@ class Cliasi:
             """
             Update progressbar message and progress
 
-            :param message: Message to update to (None for no update)
+            :param message_left: Message to update to (None for no update)
             :param progress: Progress to update to (None for no update)
             :return: None
             """
             self._progress = progress if progress is not None else self._progress
-            super(Cliasi.NonBlockingProgressTask, self).update(message)
+            super(Cliasi.NonBlockingProgressTask, self).update(
+                message_left, message_center, message_right
+            )
 
     @staticmethod
     def __get_null_task() -> NonBlockingProgressTask:
@@ -1455,7 +1622,7 @@ class Cliasi:
 
         :return: "fake" NonBlockingProgressTask
         """
-        task = Cliasi.NonBlockingProgressTask("", Event(), False, 0)
+        task = Cliasi.NonBlockingProgressTask("", False, False, Event(), False, 0)
 
         def _null_update(*args: object, **kwargs: object) -> None:
             pass
@@ -1470,7 +1637,9 @@ class Cliasi:
 
     def __get_progressbar_task(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool,
+        message_right: str | bool,
         progress: int,
         symbol_animation: builtins.list[str],
         show_percent: bool,
@@ -1482,7 +1651,15 @@ class Cliasi:
         """
         Get a progressbar task
 
-        :param message: Message to display
+        :param message_left:
+            Message to display on the left side of the bar
+            or bool flag to enable /disable
+        :param message_center:
+            Message to display in the center of the bar
+            or bool flag to enable /disable (default True)
+        :param message_right:
+            Message to display on the right side of the bar
+            or bool flag to enable / disable
         :param progress: Initial progress
         :param symbol_animation: List of string for symbol animation
         :param show_percent: Show percent at end of progressbar
@@ -1497,7 +1674,9 @@ class Cliasi:
         condition = Event()
 
         task = Cliasi.NonBlockingProgressTask(
-            message,
+            message_left,
+            message_center,
+            message_right,
             condition,
             override_messages_stay_in_one_line
             if override_messages_stay_in_one_line is not None
@@ -1514,7 +1693,12 @@ class Cliasi:
             current_symbol = symbol_animation[task._index % len(symbol_animation)]
             self.__show_animation_frame(
                 self.__format_progressbar_to_screen_width(
-                    message, current_symbol, task._progress, show_percent
+                    task._message_left,
+                    task._message_center,
+                    task._message_right,
+                    current_symbol,
+                    task._progress,
+                    show_percent,
                 ),
                 False,
                 False,
@@ -1542,7 +1726,9 @@ class Cliasi:
 
     def progressbar_animated_normal(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool = True,
+        message_right: str | bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
@@ -1553,8 +1739,17 @@ class Cliasi:
         """
         Display an animated progressbar
         Update progress using the returned Task object
+        Message is shown centered by default (message_center=True)
 
-        :param message: Message to display
+        :param message_left:
+            Message to display on the left side of the bar
+            or bool flag to enable /disable
+        :param message_center:
+            Message to display in the center of the bar
+            or bool flag to enable /disable (default True)
+        :param message_right:
+            Message to display on the right side of the bar
+            or bool flag to enable / disable
         :param verbosity: Verbosity of message
         :param interval: Interval between animation frames
         :param progress: Current Progress to display
@@ -1574,7 +1769,9 @@ class Cliasi:
             return self.__get_null_task()
 
         return self.__get_progressbar_task(
-            message,
+            message_left,
+            message_center,
+            message_right,
             progress,
             ANIMATION_SYMBOLS_PROGRESSBAR["default"][
                 randint(0, len(ANIMATION_SYMBOLS_PROGRESSBAR["default"]) - 1)
@@ -1588,7 +1785,9 @@ class Cliasi:
 
     def progressbar_animated_download(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
@@ -1599,8 +1798,17 @@ class Cliasi:
         """
         Display an animated progressbar
         Update progress using the returned Task object
+        Message is shown centered by default (message_center=True)
 
-        :param message: Message to display
+        :param message_left:
+            Message to display on the left side of the bar
+            or bool flag to enable /disable
+        :param message_center:
+            Message to display in the center of the bar
+            or bool flag to enable /disable (default True)
+        :param message_right:
+            Message to display on the right side of the bar
+            or bool flag to enable / disable
         :param verbosity: Verbosity of message
         :param interval: Interval between animation frames
         :param progress: Current Progress to display
@@ -1620,7 +1828,9 @@ class Cliasi:
             return self.__get_null_task()
 
         return self.__get_progressbar_task(
-            message,
+            message_left,
+            message_center,
+            message_right,
             progress,
             ANIMATION_SYMBOLS_PROGRESSBAR["download"][
                 randint(0, len(ANIMATION_SYMBOLS_PROGRESSBAR["download"]) - 1)
