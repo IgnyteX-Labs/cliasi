@@ -79,7 +79,7 @@ Blocking animations run in the main thread and block further execution until com
     from cliasi import cli
     import time
 
-    cli.animate_message_blocking("Saving.. [CTRL-C] to stop", time=3)
+    cli.animate_message_blocking("Saving...", time=3, message_right="[CTRL-C] to stop")
     # You cant do anything else while the animation is running
     # Useful if you save something to a file at the end of a program
     # User can CTRL-C while this is running
@@ -95,6 +95,9 @@ Blocking animations run in the main thread and block further execution until com
           class="asciinema_demo-dark"
           alt="Blocking animation (dark theme)">
    </div>
+
+.. tip::
+    For more information about alignment of messages, see :ref:`message_alignment`.
 
 Non-Blocking Animation
 """""""""""""""""""""""
@@ -214,7 +217,7 @@ Message alignment
 ------------------
 You can align messages to the left, right, or center of the terminal.
 
-Almost all message types support alignment
+All message types support alignment
 with the ``message_left``, ``message_right``, and ``message_center`` parameters.
 
 You can either set the corresponding parameters to ``True``,
@@ -237,3 +240,23 @@ or set the parameters themselves to the desired text.
     cli.warn(False, message_center="This is a centered message.")
     # False because parameter message_left is required to be set. Can also use ""
     cli.info("From left", message_center="to the middle", message_right="to the right")
+
+htmlinsert
+
+.. _max_dead_space:
+
+max_dead_space parameter
+"""""""""""""""""""""""""
+If you send a short message with short left text and short right text they might
+end up very far apart on wide terminals. Users might not read the text on the right.
+
+To prevent this you can set the :attr:`~cliasi.cliasi.Cliasi.max_dead_space`
+parameter to a number of characters.
+If the dead space between left and right aligned text exceeds this number,
+the right or center aligned text put next to the left aligned text.
+
+If you deliberately disable the left aligned text or
+set :attr:`~cliasi.cliasi.Cliasi.max_dead_space` to ``None``
+the check will be skipped
+
+

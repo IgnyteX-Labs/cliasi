@@ -184,3 +184,23 @@ def test_cursor_pos_with_ask(fixed_width, capture_streams, monkeypatch):
     assert "Proceed?" in line
     assert line.rstrip().endswith("(y/n)")
     assert line.find("Proceed?") < line.find("(y/n)")
+
+
+def test_max_dead_space_limits_alignment(fixed_width, capture_streams):
+    out_buf, _ = capture_streams
+    # Without a max_dead_space cap, the right message aligns far to the edge
+    c_aligned = Cliasi("TEST", colors=False, max_dead_space=None)
+    c_aligned.info("Left", message_right="Right")
+    aligned_line = normalize_output(out_buf.getvalue()).splitlines()[0]
+    gap_aligned = aligned_line.split("Left", 1)[1].split("Right")[0]
+    assert len(gap_aligned) > 10  # Big gap due to alignment spacing
+
+    # With a small max_dead_space, alignment is disabled and spacing stays tight
+    out_buf.truncate(0)
+    out_buf.seek(0)
+    c_compact = Cliasi("TEST", colors=False, max_dead_space=5)
+    c_compact.info("Left", message_right="Right")
+    compact_line = normalize_output(out_buf.getvalue()).splitlines()[0]
+    gap_compact = compact_line.split("Left", 1)[1].split("Right")[0]
+    assert len(gap_compact) <= 5
+    assert len(gap_compact) < len(gap_aligned)

@@ -56,6 +56,7 @@ class Cliasi:
     min_verbose_level: int
     messages_stay_in_one_line: bool
     enable_colors: bool
+    max_dead_space: int | None
     __prefix_seperator: str
     __space_before_message: int  # Number of spaces before message start (for alignment)
 
@@ -66,6 +67,7 @@ class Cliasi:
         colors: bool = True,
         min_verbose_level: int | None = None,
         seperator: str = "|",
+        max_dead_space: int | None = 100,
     ):
         """
         Initialize a cliasi instance.
@@ -80,6 +82,10 @@ class Cliasi:
             None will result in the verbosity level
             getting set to the value of the global instance which is by default 0
         :param seperator: Seperator between prefix and message
+        :param max_dead_space:
+            Sets the maximum dead space (space characters) allowed when a message
+            uses alignments. Too much dead space will cause people to not read
+            aligned messages. Set to None to disable.
         """
         self.__prefix = ""
         self.messages_stay_in_one_line = messages_stay_in_one_line
@@ -90,6 +96,7 @@ class Cliasi:
             else cli.min_verbose_level
         )
         self.__prefix_seperator = seperator
+        self.max_dead_space = max_dead_space
         self.set_prefix(prefix)
 
     def __compute_space_before_message(self) -> None:
@@ -213,10 +220,6 @@ class Cliasi:
 
         lines = []
 
-        left_end = 0
-        center_end = 0
-        right_end = 0
-
         if content_total == "":
             # Nothing to print
             return None
@@ -320,33 +323,50 @@ class Cliasi:
             m_left = message_left if isinstance(message_left, str) else ""
             m_center = message_center if isinstance(message_center, str) else ""
             m_right = message_right if isinstance(message_right, str) else ""
-
-            line = m_left
-            left_end = len(line)
-
-            if m_center:
-                center_start = (content_space - len(m_center)) // 2
-                needed_space = 1 if m_left else 0
-                if center_start >= len(line) + needed_space:
-                    line += " " * (center_start - len(line)) + m_center
-                else:
-                    line += (" " if m_left else "") + m_center
-                center_end = len(line)
+            if (
+                isinstance(self.max_dead_space, int)  # Logic is enabled
+                and message_left is not False  # Left message not disabled deliberately
+                and (content_space - len(content_total) - seperating_space)
+                > self.max_dead_space
+            ):
+                # Too much dead space, print one after the other
+                lines.append(
+                    m_left
+                    + (" " if m_left and m_center else "")
+                    + m_center
+                    + (" " if (m_left or m_center) and m_right else "")
+                    + m_right
+                )
+                left_end = len(lines[-1])
+                center_end = len(lines[-1])
+                right_end = len(lines[-1])
             else:
-                center_end = left_end
+                line = m_left
+                left_end = len(line)
 
-            if m_right:
-                right_start = content_space - len(m_right)
-                needed_space = 1 if (m_left or m_center) else 0
-                if right_start >= len(line) + needed_space:
-                    line += " " * (right_start - len(line)) + m_right
+                if m_center:
+                    center_start = (content_space - len(m_center)) // 2
+                    needed_space = 1 if m_left else 0
+                    if center_start >= len(line) + needed_space:
+                        line += " " * (center_start - len(line)) + m_center
+                    else:
+                        line += (" " if m_left else "") + m_center
+                    center_end = len(line)
                 else:
-                    line += (" " if (m_left or m_center) else "") + m_right
-                right_end = len(line)
-            else:
-                right_end = center_end
+                    center_end = left_end
 
-            lines.append(line)
+                if m_right:
+                    right_start = content_space - len(m_right)
+                    needed_space = 1 if (m_left or m_center) else 0
+                    if right_start >= len(line) + needed_space:
+                        line += " " * (right_start - len(line)) + m_right
+                    else:
+                        line += (" " if (m_left or m_center) else "") + m_right
+                    right_end = len(line)
+                else:
+                    right_end = center_end
+
+                lines.append(line)
 
         with _print_lock:
             index = 0
@@ -404,10 +424,23 @@ class Cliasi:
         """
         Send a message in format # [prefix] message
 
-        :param message_left: Message to send
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -437,10 +470,23 @@ class Cliasi:
         Print an informational message.
         Send an info message in format i [prefix] message
 
-        :param message_left: Message to send
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -469,10 +515,23 @@ class Cliasi:
         """
         Send a log message in format LOG [prefix] message
 
-        :param message_left: Message to log
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -501,10 +560,23 @@ class Cliasi:
         """
         Send a log message in format LOG [prefix] message
 
-        :param message_left: Message to log
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -533,10 +605,23 @@ class Cliasi:
         """
         Send a list style message in format * [prefix] message
 
-        :param message_left: Message to send
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -565,10 +650,23 @@ class Cliasi:
         """
         Send a warning message in format ! [prefix] message
 
-        :param message_left: Message to send
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -596,10 +694,23 @@ class Cliasi:
         """
         Send a failure message in format X [prefix] message
 
-        :param message_left: Message to send
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -628,10 +739,23 @@ class Cliasi:
         """
         Send a success message in format ✔ [prefix] message
 
-        :param message_left: Message to send
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param verbosity: Verbosity of this message
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :return: None
@@ -669,10 +793,23 @@ class Cliasi:
         """
         Ask for input in format ? [prefix] message
 
-        :param message_left: Question to ask
+        :param message_left:
+            Question to ask
+            Can also be a bool flag to print left-aligned.
         :param hide_input: True hides user input
-        :param message_center: Message to center
-        :param message_right: Message to right align
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+
         :param override_messages_stay_in_one_line:
             Override the message to stay in one line
         :param cursor_position:
@@ -716,15 +853,31 @@ class Cliasi:
 
     def __show_animation_frame(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool,
+        message_right: str | bool,
         color: TextColor | str,
         current_symbol_frame: str,
         current_animation_frame: str,
     ) -> None:
         """
-        Show a single animation frame based on total index
+        Show a single animation frame based on the total index
 
-        :param message: Message to show
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param color: Color of message
         :param current_symbol_frame: Current symbol animation to show
         :param current_animation_frame: Current animation frame to show
@@ -735,14 +888,20 @@ class Cliasi:
             current_symbol_frame,
             current_animation_frame
             + ("" if current_animation_frame == "" else " ")
-            + message,
+            + message_left
+            if isinstance(message_left, str)
+            else "",
             True,
+            message_center=message_center,
+            message_right=message_right,
         )
 
     def animate_message_blocking(
         self,
-        message: str,
+        message_left: str,
         time: int | float,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
@@ -752,8 +911,22 @@ class Cliasi:
         Display a loading animation for a fixed time
         This will block the main thread using time.sleep
 
-        :param message: Message to display
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
         :param time: Time to display for
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param verbosity: Verbosity of this message
         :param interval: Interval between changes in loading animation
         :param unicorn: Enable unicorn mode
@@ -794,7 +967,9 @@ class Cliasi:
                 frame_every_val if isinstance(frame_every_val, int) else 1
             )
             self.__show_animation_frame(
-                message,
+                message_left,
+                message_center,
+                message_right,
                 TextColor.BRIGHT_MAGENTA
                 if not unicorn
                 else UNICORN[index_total % len(UNICORN)],
@@ -971,7 +1146,9 @@ class Cliasi:
 
         _message_stays_in_one_line: bool
         _condition: Event
-        _message: str  # Current message to display
+        _message_left: str | bool  # Current message to display
+        _message_center: str | bool  # Current message to display
+        _message_right: str | bool  # Current message to display
         _index: int = 0  # Animation frame total index
         _thread: Thread
         _update: Callable[
@@ -979,9 +1156,16 @@ class Cliasi:
         ]  # Update call to update with current animation frame
 
         def __init__(
-            self, message: str, stop_condition: Event, message_stays_in_one_line: bool
+            self,
+            message_left: str | bool,
+            message_center: str | bool,
+            message_right: str | bool,
+            stop_condition: Event,
+            message_stays_in_one_line: bool,
         ) -> None:
-            self._message = message
+            self._message_left = message_left
+            self._message_center = message_center
+            self._message_right = message_right
             self._message_stays_in_one_line = message_stays_in_one_line
             self._condition = stop_condition
 
@@ -1003,12 +1187,14 @@ class Cliasi:
             :param message: Message to update to (None for no update)
             :return: None
             """
-            self._message = message if message is not None else self._message
+            self._message_left = message if message is not None else self._message_left
             self._update()
 
     def __get_animation_task(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool,
+        message_right: str | bool,
         color: TextColor,
         symbol_animation: builtins.list[str],
         main_animation: dict[str, int | builtins.list[str]],
@@ -1019,7 +1205,21 @@ class Cliasi:
         """
         Create an animation task
 
-        :param message: Message to display
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param color: Color of message
         :param symbol_animation:
             The symbol animation to display as string frames in a list
@@ -1032,7 +1232,9 @@ class Cliasi:
         condition = Event()
 
         task = Cliasi.NonBlockingAnimationTask(
-            message,
+            message_left,
+            message_center,
+            message_right,
             condition,
             override_messages_stay_in_one_line
             if override_messages_stay_in_one_line is not None
@@ -1069,7 +1271,9 @@ class Cliasi:
             )
 
             self.__show_animation_frame(
-                task._message,
+                task._message_left,
+                task._message_center,
+                task._message_right,
                 color if not unicorn else UNICORN[task._index % len(UNICORN)],
                 symbol_animation[task._index % len(symbol_animation)],
                 frames[(task._index // frame_every) % len(frames)],
@@ -1094,7 +1298,9 @@ class Cliasi:
 
     def animate_message_non_blocking(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
@@ -1104,7 +1310,21 @@ class Cliasi:
         Display a loading animation in the background
         Stop animation by calling .stop() on the returned object
 
-        :param message: Message to display
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param verbosity: Verbosity of message
         :param interval: Interval for animation to play
         :param unicorn: Enable unicorn mode
@@ -1121,7 +1341,9 @@ class Cliasi:
             randint(0, len(ANIMATIONS_MAIN) - 1),
         )
         return self.__get_animation_task(
-            message,
+            message_left,
+            message_center,
+            message_right,
             TextColor.BRIGHT_MAGENTA,
             ANIMATIONS_SYMBOLS[selection_symbol],
             ANIMATIONS_MAIN[selection_animation],
@@ -1132,7 +1354,9 @@ class Cliasi:
 
     def animate_message_download_non_blocking(
         self,
-        message: str,
+        message_left: str | bool,
+        message_center: str | bool = False,
+        message_right: str | bool = False,
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
@@ -1141,7 +1365,21 @@ class Cliasi:
         """
         Display a downloading animation in the background
 
-        :param message: Message to display
+        :param message_left:
+            Message to send or bool flag to print left-aligned.
+            See message_center and message_right for details.
+        :param message_center:
+            Message or bool flag to print centered to terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
+        :param message_right:
+            Message or bool flag to print on right side of terminal
+            If messages dont fit into their sections
+            or messages are multiline, they will be outputted one
+            after the other (except for right aligned content)
+            thus destroying any alignment.
         :param verbosity: Verbosity of message
         :param interval: Interval for animation to play
         :param unicorn: Enable unicorn mode
@@ -1155,7 +1393,9 @@ class Cliasi:
 
         selection_animation = randint(0, len(ANIMATIONS_MAIN) - 1)
         return self.__get_animation_task(
-            message,
+            message_left,
+            message_center,
+            message_right,
             TextColor.BRIGHT_CYAN,
             ANIMATION_SYMBOLS_PROGRESSBAR["download"][
                 randint(0, len(ANIMATION_SYMBOLS_PROGRESSBAR["download"]) - 1)
@@ -1181,8 +1421,13 @@ class Cliasi:
             progress: int,
         ) -> None:
             super().__init__(
-                message, stop_condition, override_messages_stay_in_one_line
+                message,
+                False,
+                False,
+                stop_condition,
+                override_messages_stay_in_one_line,
             )
+            # alignment currently not supported in progressbars
             self._progress = progress
 
         def update(
@@ -1202,7 +1447,8 @@ class Cliasi:
             self._progress = progress if progress is not None else self._progress
             super(Cliasi.NonBlockingProgressTask, self).update(message)
 
-    def __get_null_task(self) -> NonBlockingProgressTask:
+    @staticmethod
+    def __get_null_task() -> NonBlockingProgressTask:
         """
         Get a null progressbar task to return when verbosity is not met
         to not return None
@@ -1270,6 +1516,8 @@ class Cliasi:
                 self.__format_progressbar_to_screen_width(
                     message, current_symbol, task._progress, show_percent
                 ),
+                False,
+                False,
                 color if not unicorn else UNICORN[task._index % len(UNICORN)],
                 current_symbol,
                 current_animation_frame="",
