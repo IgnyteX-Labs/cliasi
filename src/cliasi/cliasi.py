@@ -65,7 +65,7 @@ class Cliasi:
     def __init__(
         self,
         prefix: str = "",
-        messages_stay_in_one_line: bool = False,
+            messages_stay_in_one_line: bool | None = None,
         colors: bool = True,
         min_verbose_level: int | None = None,
         seperator: str = "|",
@@ -77,6 +77,8 @@ class Cliasi:
         :param prefix: Message Prefix [prefix] message
         :param messages_stay_in_one_line:
             Have all messages appear in one line by default
+            Setting this to None will result in the flag
+            getting set to the value of the global instance which is by default False
         :param colors: Enable color display
         :param min_verbose_level:
             Only displays messages with verbose level higher
@@ -90,7 +92,11 @@ class Cliasi:
             aligned messages. Set to None to disable.
         """
         self.__prefix = ""
-        self.messages_stay_in_one_line = messages_stay_in_one_line
+        self.messages_stay_in_one_line = (
+            messages_stay_in_one_line
+            if messages_stay_in_one_line is not None
+            else cli.messages_stay_in_one_line
+        )
         self.enable_colors = colors
         self.min_verbose_level = (
             min_verbose_level
@@ -1957,4 +1963,4 @@ class Cliasi:
 
 cli: Cliasi
 """Default Cliasi instance (shows INFO and above by default)"""
-cli = Cliasi("CLI", min_verbose_level=logging.INFO)
+cli = Cliasi("CLI", min_verbose_level=logging.INFO, messages_stay_in_one_line=False)
