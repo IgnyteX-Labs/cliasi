@@ -62,7 +62,7 @@ If an exception is raised or a traceback is logged, it will be formatted using t
     <span style="color: #ff5959; font-weight: bold">X</span> <span style="color: #888888">[CLI]</span> | <span style="color: #ff5959">Traceback (most recent call last):
             </span>|<span style="color: #ff5959">   File "examples/exception_message.py", line 7, in &lt;module&gt;
             </span>|<span style="color: #ff5959">     raise ValueError("An example error")
-            </span>|<span style="color: #ff5959"> ValueError: An example error</span>
+            </span>|<span style="color: #ff5959"> ValueError: An examplfont-weight: bold"e error</span>
     </pre></div>
     </div>
 
@@ -246,7 +246,36 @@ or set the parameters themselves to the desired text.
     # False because parameter message_left is required to be set. Can also use ""
     cli.info("From left", message_center="to the middle", message_right="to the right")
 
-htmlinsert
+.. raw:: html
+
+    <div class="cliasi-align-block highlight">
+        <div class="cliasi-align-preview">
+        <span class="left" style="color: #ffffff; font-weight: bold">i</span>
+        <span style="color: #888888">[CLI]</span>
+        <span class="sep">|</span>
+        <span class="left">This is a left-aligned message.</span>
+      </div>
+      <div class="cliasi-align-preview">
+        <span class="left" style="color: #00ff00; font-weight: bold">✔</span>
+        <span style="color: #888888">[CLI]</span>
+        <span class="sep">|</span>
+        <span class="right" style="color: #00ff00">This is a right-aligned message.</span>
+      </div>
+      <div class="cliasi-align-preview">
+        <span class="left" style="color: #ffff00; font-weight: bold">!</span>
+        <span style="color: #888888">[CLI]</span>
+        <span class="sep">|</span>
+        <span class="center" style="color: #ffff00">This is a centered message.</span>
+      </div>
+      <div class="cliasi-align-preview">
+        <span class="left" style="color: #ffffff; font-weight: bold">i</span>
+        <span style="color: #888888">[CLI]</span>
+        <span class="sep">|</span>
+        <span class="left">From left</span>
+        <span class="center" style="color: #ffff00">to the middle</span>
+        <span class="right" style="color: #00ff00">to the right</span>
+      </div>
+    </div>
 
 .. _max_dead_space:
 
@@ -263,5 +292,4 @@ the right or center aligned text put next to the left aligned text.
 If you deliberately disable the left aligned text or
 set :attr:`~cliasi.cliasi.Cliasi.max_dead_space` to ``None``
 the check will be skipped
-
 
