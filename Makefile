@@ -13,7 +13,7 @@ help:
 	@echo "  docs       		Build documentation"
 	@echo "  build      		Build the package"
 	@echo "  clean      		Remove build artifacts"
-	@echo "  all        		Run lint, typecheck, and test (default)"
+	@echo "  check        		Run lint, format, typecheck, and test (default)"
 	@echo "  casts      		Record asciinema casts for the documentation. Requires asciinema installed"
 	@echo "  casts-clean 		Remove generated asciinema SVGs"
 	@echo "  cast-interactive 	Record an interactive asciinema cast"
@@ -29,7 +29,7 @@ test:
 	@echo "pytest complete"
 
 lint:
-	uv run ruff check
+	uv run ruff check --fix
 	@echo "ruff check complete"
 
 format:
