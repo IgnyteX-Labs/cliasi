@@ -252,25 +252,25 @@ or set the parameters themselves to the desired text.
         <div class="cliasi-align-preview">
         <span class="left" style="color: #ffffff; font-weight: bold">i</span>
         <span style="color: #888888">[CLI]</span>
-        <span class="sep">|</span>
+        <span>|</span>
         <span class="left">This is a left-aligned message.</span>
       </div>
       <div class="cliasi-align-preview">
         <span class="left" style="color: #00ff00; font-weight: bold">✔</span>
         <span style="color: #888888">[CLI]</span>
-        <span class="sep">|</span>
+        <span>|</span>
         <span class="right" style="color: #00ff00">This is a right-aligned message.</span>
       </div>
       <div class="cliasi-align-preview">
         <span class="left" style="color: #ffff00; font-weight: bold">!</span>
         <span style="color: #888888">[CLI]</span>
-        <span class="sep">|</span>
+        <span>|</span>
         <span class="center" style="color: #ffff00">This is a centered message.</span>
       </div>
       <div class="cliasi-align-preview">
         <span class="left" style="color: #ffffff; font-weight: bold">i</span>
         <span style="color: #888888">[CLI]</span>
-        <span class="sep">|</span>
+        <span>|</span>
         <span class="left">From left</span>
         <span class="center" style="color: #ffff00">to the middle</span>
         <span class="right" style="color: #00ff00">to the right</span>

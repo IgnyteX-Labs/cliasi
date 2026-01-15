@@ -64,8 +64,3 @@ body[data-theme="light"] .asciinema_demo-dark {
     margin-left: auto;
     text-align: right;
 }
-
-.cliasi-align-preview .sep {
-    color: #888888;
-    margin: 0 0.5ch;
-}
