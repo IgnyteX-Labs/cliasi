@@ -81,6 +81,15 @@ X [CLI] | Traceback (most recent call last):
         | ValueError: An example error
 ```
 
+### Other features
+
+cliasi has many more features like:
+
+- Logging integration
+- Custom message alignments
+- Customizable progressbars
+- And more!
+
 ### Contributing:
 
 This is just a fun project of mine mainly to try out python packaging.
