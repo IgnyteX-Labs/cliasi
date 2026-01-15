@@ -85,11 +85,20 @@ ANIMATIONS_MAIN: list[dict[str, int | list[str]]] = [
 
 ANIMATION_SYMBOLS_PROGRESSBAR: dict[str, list[list[str]]] = {
     "default": ANIMATIONS_SYMBOLS,
-    "download": [["🢓", "↧", "⭣", "⯯", "⤓", "⩡", "_", "_"]],
+    "download": [["°", "↧", "⭣", "⯯", "⤓", "⩡", "_", "_"]],
 }
 
 DEFAULT_TERMINAL_SIZE: int = 80
 """Default terminal size used for CLI rendering."""
+
+
+class CursorPos(StrEnum):
+    """Cursor positions for user input
+    Useful in :meth:`~cliasi.cliasi.Cliasi.ask()` method."""
+
+    LEFT = "LEFT"
+    CENTER = "CENTER"
+    RIGHT = "RIGHT"
 
 
 class TextColor(StrEnum):

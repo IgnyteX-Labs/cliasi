@@ -79,7 +79,7 @@ Blocking animations run in the main thread and block further execution until com
     from cliasi import cli
     import time
 
-    cli.animate_message_blocking("Saving.. [CTRL-C] to stop", time=3)
+    cli.animate_message_blocking("Saving...", time=3, message_right="[CTRL-C] to stop")
     # You cant do anything else while the animation is running
     # Useful if you save something to a file at the end of a program
     # User can CTRL-C while this is running
@@ -95,6 +95,9 @@ Blocking animations run in the main thread and block further execution until com
           class="asciinema_demo-dark"
           alt="Blocking animation (dark theme)">
    </div>
+
+.. tip::
+    For more information about alignment of messages, see :ref:`message_alignment`.
 
 Non-Blocking Animation
 """""""""""""""""""""""
@@ -161,7 +164,10 @@ Animated Progress Bars
 
     from cliasi import cli
 
-    task = cli.progressbar_animated_download("Downloading", )
+    task = cli.progressbar_animated_download(
+        message_left="downloading",
+        message_right="please wait",
+    )
     for i in range(100):
         time.sleep(0.05)  # Simulate work
         task.update(progress=i)    # Update progress by 1
@@ -184,13 +190,16 @@ User Input
 
 You can ask for user input, including passwords.
 
+If you use any form of alignment, you can use the ``cursor_position`` parameter
+to specify where the input cursor should be placed after the text has been printed.
+
 .. code-block:: python
     :caption: examples/user_input_interactive.py
 
     from cliasi import cli
 
     name = cli.ask("What is your name?")
-    code = cli.ask("Enter your secret code:", hide_input=True)
+    code = cli.ask("Enter your secret code:", hide_input=True, message_right="[login]")
 
     cli.info(f"Hello, {name} with code {code}")
 
@@ -204,3 +213,55 @@ You can ask for user input, including passwords.
           class="asciinema_demo-dark"
           alt="User input (dark theme)">
     </div>
+
+.. _message_alignment:
+
+Message alignment
+------------------
+You can align messages to the left, right, or center of the terminal.
+
+All message types support alignment
+with the ``message_left``, ``message_right``, and ``message_center`` parameters.
+
+You can either set the corresponding parameters to ``True``,
+or set the parameters themselves to the desired text.
+
+.. note::
+    If the left message goes too far and covers the middle one
+    or is too long or has newlines, all aligned will be printed
+    one after the other with as many lines as it takes.
+
+    Cliasi will attempt to put ``message_right`` to the right at the end of
+    messages that go over multiple lines, but this is not always possible.
+
+
+.. code-block:: python
+    :caption: examples/message_alignment.py
+
+    from cliasi import cli
+
+    cli.info("This is a left-aligned message.")  # Default is left-aligned
+    cli.success("This is a right-aligned message.", message_right=True)
+    cli.warn(False, message_center="This is a centered message.")
+    # False because parameter message_left is required to be set. Can also use ""
+    cli.info("From left", message_center="to the middle", message_right="to the right")
+
+htmlinsert
+
+.. _max_dead_space:
+
+max_dead_space parameter
+"""""""""""""""""""""""""
+If you send a short message with short left text and short right text they might
+end up very far apart on wide terminals. Users might not read the text on the right.
+
+To prevent this you can set the :attr:`~cliasi.cliasi.Cliasi.max_dead_space`
+parameter to a number of characters.
+If the dead space between left and right aligned text exceeds this number,
+the right or center aligned text put next to the left aligned text.
+
+If you deliberately disable the left aligned text or
+set :attr:`~cliasi.cliasi.Cliasi.max_dead_space` to ``None``
+the check will be skipped
+
+

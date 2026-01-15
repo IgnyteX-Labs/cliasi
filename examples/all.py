@@ -23,7 +23,7 @@ cli.newline()
 
 cli.set_prefix("LINEBREAKS")
 cli.message("LINEBREAK TEST\nSUCCESSFUL")
-cli.info("TEST THISWILLNOTBECUTOFF!" * 100)
+cli.info("TEST THISWILLNOTBECUTOFF! " * 100)
 
 
 cli.set_prefix("ANIMATED")

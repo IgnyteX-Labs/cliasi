@@ -4,15 +4,16 @@ API Reference
 Top-level package
 -----------------
 
-The main interface for ``cliasi``.
+The main interface for :mod:`~cliasi.cliasi`.
 
-cliasi exports the :class:`~cliasi.Cliasi` instance :data:`~cliasi.cli`
+cliasi exports the :class:`~cliasi.cliasi.Cliasi` instance :data:`~cliasi.cli`
 as well as
 
 * :data:`~cliasi.STDOUT_STREAM` standard output stream the library uses
 * :data:`~cliasi.STDERR_STREAM` error stream the library uses
 * :data:`~cliasi.SYMBOLS` collection of useful symbols
 * :class:`~cliasi.constants.TextColor` color storage for terminal text
+* :class:`~cliasi.constants.CursorPos` to set position of cursor on interactive methods
 * :func:`~cliasi.logging_handler.install_logger` (to install it your own way, is done automatically)
 
 .. py:data:: cliasi.cli
@@ -38,9 +39,10 @@ Cliasi instance
 -----------------
 The main cliasi instance exposes various parameters to control behavior:
 
-* :attr:`~cliasi.cliasi.Cliasi.messages_stay_in_one_line` - whether messages should stay in one line
-* :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` - verbosity level
-* :attr:`~cliasi.cliasi.Cliasi.enable_colors` - whether to use colored output
+* :attr:`~cliasi.cliasi.Cliasi.messages_stay_in_one_line` - whether messages should stay in one line, see :ref:`instances`
+* :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` - verbosity level, see :ref:`instances`
+* :attr:`~cliasi.cliasi.Cliasi.enable_colors` - weather to use colored output
+* :attr:`~cliasi.cliasi.Cliasi.max_dead_space` - maximum number of empty space between aligned messages :ref:`max_dead_space`
 
 .. automodule:: cliasi.cliasi
    :members:
