@@ -831,11 +831,7 @@ class Cliasi:
         )
 
         if metadata and cursor_position != CursorPos.RIGHT:
-            target = (
-                metadata["left_end"]
-                if cursor_position == CursorPos.LEFT
-                else metadata["center_end"]
-            )
+            target = metadata[f"{cursor_position.lower()}_end"]
             walk_back = metadata["total_length"] - target
             if walk_back > 0:
                 print(f"\x1b[{walk_back}D", end="", flush=True)

@@ -7,7 +7,7 @@ This module defines animations and default settings for the CLI.
 import sys
 
 if sys.version_info >= (3, 11):
-    from enum import Enum, StrEnum
+    from enum import StrEnum
 else:
     from enum import Enum
 
@@ -92,13 +92,13 @@ DEFAULT_TERMINAL_SIZE: int = 80
 """Default terminal size used for CLI rendering."""
 
 
-class CursorPos(Enum):
+class CursorPos(StrEnum):
     """Cursor positions for user input
     Useful in :meth:`~cliasi.cliasi.Cliasi.ask()` method."""
 
-    LEFT = 0
-    CENTER = 1
-    RIGHT = 2
+    LEFT = "LEFT"
+    CENTER = "CENTER"
+    RIGHT = "RIGHT"
 
 
 class TextColor(StrEnum):
