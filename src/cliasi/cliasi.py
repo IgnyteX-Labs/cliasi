@@ -145,10 +145,10 @@ class Cliasi:
         self,
         color: TextColor | str,
         symbol: str,
-        message_left: str | bool,
+        message_left: str | bool | None,
         override_messages_stay_in_one_line: bool | None,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         color_message: bool = True,
         write_to_stderr: bool = False,
     ) -> dict[str, int] | None:
@@ -416,10 +416,10 @@ class Cliasi:
 
     def message(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.INFO,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -461,10 +461,10 @@ class Cliasi:
 
     def info(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.INFO,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -507,10 +507,10 @@ class Cliasi:
 
     def log(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.DEBUG,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -552,10 +552,10 @@ class Cliasi:
 
     def log_small(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.DEBUG,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -597,10 +597,10 @@ class Cliasi:
 
     def list(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.INFO,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -642,10 +642,10 @@ class Cliasi:
 
     def warn(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.WARNING,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -686,10 +686,10 @@ class Cliasi:
 
     def fail(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.CRITICAL,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -731,10 +731,10 @@ class Cliasi:
 
     def success(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         verbosity: int = logging.INFO,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
     ) -> None:
         """
@@ -784,10 +784,10 @@ class Cliasi:
 
     def ask(
         self,
-        message_left: str | bool,
+        message_left: str | bool | None,
         hide_input: bool = False,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         override_messages_stay_in_one_line: bool | None = None,
         cursor_position: CursorPos = CursorPos.LEFT,
     ) -> str:
@@ -850,9 +850,9 @@ class Cliasi:
 
     def __show_animation_frame(
         self,
-        message_left: str | bool,
-        message_center: str | bool,
-        message_right: str | bool,
+        message_left: str | bool | None,
+        message_center: str | bool | None,
+        message_right: str | bool | None,
         color: TextColor | str,
         current_symbol_frame: str,
         current_animation_frame: str,
@@ -895,10 +895,10 @@ class Cliasi:
 
     def animate_message_blocking(
         self,
-        message_left: str,
+        message_left: str | bool | None,
         time: int | float,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
@@ -992,9 +992,9 @@ class Cliasi:
 
     def __format_progressbar_to_screen_width(
         self,
-        message_left: str | bool,
-        message_center: str | bool,
-        message_right: str | bool,
+        message_left: str | bool | None,
+        message_center: str | bool | None,
+        message_right: str | bool | None,
         symbol: str,
         progress: int,
         show_percent: bool,
@@ -1193,9 +1193,9 @@ class Cliasi:
 
     def progressbar(
         self,
-        message_left: str | bool,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_left: str | bool | None,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         override_messages_stay_in_one_line: bool | None = True,
@@ -1237,9 +1237,9 @@ class Cliasi:
 
     def progressbar_download(
         self,
-        message_left: str | bool,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_left: str | bool | None,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         show_percent: bool = False,
@@ -1285,9 +1285,9 @@ class Cliasi:
 
         _message_stays_in_one_line: bool
         _condition: Event
-        _message_left: str | bool  # Current message to display
-        _message_center: str | bool  # Current message to display
-        _message_right: str | bool  # Current message to display
+        _message_left: str | bool | None  # Current message to display
+        _message_center: str | bool | None  # Current message to display
+        _message_right: str | bool | None  # Current message to display
         _index: int = 0  # Animation frame total index
         _thread: Thread
         _update: Callable[
@@ -1296,9 +1296,9 @@ class Cliasi:
 
         def __init__(
             self,
-            message_left: str | bool,
-            message_center: str | bool,
-            message_right: str | bool,
+            message_left: str | bool | None,
+            message_center: str | bool | None,
+            message_right: str | bool | None,
             stop_condition: Event,
             message_stays_in_one_line: bool,
         ) -> None:
@@ -1349,9 +1349,9 @@ class Cliasi:
 
     def __get_animation_task(
         self,
-        message_left: str | bool,
-        message_center: str | bool,
-        message_right: str | bool,
+        message_left: str | bool | None,
+        message_center: str | bool | None,
+        message_right: str | bool | None,
         color: TextColor,
         symbol_animation: builtins.list[str],
         main_animation: dict[str, int | builtins.list[str]],
@@ -1455,9 +1455,9 @@ class Cliasi:
 
     def animate_message_non_blocking(
         self,
-        message_left: str | bool,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_left: str | bool | None,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
@@ -1511,9 +1511,9 @@ class Cliasi:
 
     def animate_message_download_non_blocking(
         self,
-        message_left: str | bool,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_left: str | bool | None,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         verbosity: int = logging.INFO,
         interval: int | float = 0.25,
         unicorn: bool = False,
@@ -1572,9 +1572,9 @@ class Cliasi:
 
         def __init__(
             self,
-            message_left: str | bool,
-            message_center: str | bool,
-            message_right: str | bool,
+            message_left: str | bool | None,
+            message_center: str | bool | None,
+            message_right: str | bool | None,
             stop_condition: Event,
             override_messages_stay_in_one_line: bool,
             progress: int,
@@ -1600,7 +1600,12 @@ class Cliasi:
             """
             Update progressbar message and progress
 
-            :param message_left: Message to update to (None for no update)
+            :param message_left:
+                Message or bool flag to update to (None for no update)
+            :param message_center:
+                Message or bool flag to update to (None for no update)
+            :param message_right:
+                Message or bool flag to update to (None for no update)
             :param progress: Progress to update to (None for no update)
             :return: None
             """
@@ -1632,9 +1637,9 @@ class Cliasi:
 
     def __get_progressbar_task(
         self,
-        message_left: str | bool,
-        message_center: str | bool,
-        message_right: str | bool,
+        message_left: str | bool | None,
+        message_center: str | bool | None,
+        message_right: str | bool | None,
         progress: int,
         symbol_animation: builtins.list[str],
         show_percent: bool,
@@ -1721,9 +1726,9 @@ class Cliasi:
 
     def progressbar_animated_normal(
         self,
-        message_left: str | bool,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_left: str | bool | None,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
@@ -1779,9 +1784,9 @@ class Cliasi:
 
     def progressbar_animated_download(
         self,
-        message_left: str | bool,
-        message_center: str | bool = False,
-        message_right: str | bool = False,
+        message_left: str | bool | None,
+        message_center: str | bool | None = False,
+        message_right: str | bool | None = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
