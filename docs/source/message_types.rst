@@ -272,8 +272,8 @@ or set the parameters themselves to the desired text.
         <span style="color: #888888">[CLI]</span>
         <span>|</span>
         <span class="left">From left</span>
-        <span class="center" style="color: #ffff00">to the middle</span>
-        <span class="right" style="color: #00ff00">to the right</span>
+        <span class="center">to the middle</span>
+        <span class="right">to the right</span>
       </div>
     </div>
 
