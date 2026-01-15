@@ -39,8 +39,8 @@ all other instances will inherit these settings unless you explicitly set them.
 
     <div class="highlight-text notranslate">
     <div class="highlight"><pre>
-    <span style="color: #888888">LOG [MAIN]  Shown as min verbosity is DEBUG</span>
-    <span style="color: #888888">LOG [FUNC]  Debug will be shown as min verbosity is inferred by default</span>
-    <span style="color: #ffffff; font-weight: bold">i</span> <span style="color: #888888">[FUNC]</span>  Info from function
+    <span style="color: #888888">LOG [MAIN] </span><span>| Shown as min verbosity is DEBUG</span>
+    <span style="color: #888888">LOG [FUNC] </span><span>| Debug will be shown as min verbosity is inferred by default</span>
+    <span style="color: #ffffff; font-weight: bold">i</span> <span style="color: #888888">[FUNC]</span> </span><span>| Info from function
     </pre></div>
     </div>

@@ -36,7 +36,7 @@ Here is how they look in the console:
     <span style="color: #00ff00; font-weight: bold">✔</span> <span style="color: #888888">[CLI]</span> | <span style="color: #00ff00">Process completed!</span>
     <span style="color: #ffff00; font-weight: bold">!</span> <span style="color: #888888">[CLI]</span> | <span style="color: #ffff00">Disk space is low.</span>
     <span style="color: #ff5959; font-weight: bold">X</span> <span style="color: #888888">[CLI]</span> | <span style="color: #ff5959">Failed to connect to server.</span>
-    <span style="color: #888888">LOG [CLI] | Debug info</span>
+    <span style="color: #888888">LOG [CLI]</span><span> | Debug info</span>
     <span style="color: #ffffff; font-weight: bold">-</span> <span style="color: #888888">[CLI]</span> | List item
     </pre></div>
     </div>
