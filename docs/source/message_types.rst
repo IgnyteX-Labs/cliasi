@@ -62,7 +62,7 @@ If an exception is raised or a traceback is logged, it will be formatted using t
     <span style="color: #ff5959; font-weight: bold">X</span> <span style="color: #888888">[CLI]</span> | <span style="color: #ff5959">Traceback (most recent call last):
             </span>|<span style="color: #ff5959">   File "examples/exception_message.py", line 7, in &lt;module&gt;
             </span>|<span style="color: #ff5959">     raise ValueError("An example error")
-            </span>|<span style="color: #ff5959"> ValueError: An examplfont-weight: bold"e error</span>
+            </span>|<span style="color: #ff5959"> ValueError: An example error</span>
     </pre></div>
     </div>
 
