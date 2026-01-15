@@ -16,6 +16,7 @@ from .constants import (
     DEFAULT_TERMINAL_SIZE,
     UNICORN,
     CursorPos,
+    PBCalculationMode,
     TextColor,
 )
 
@@ -1006,7 +1007,7 @@ class Cliasi:
         message_center: str | bool | None,
         message_right: str | bool | None,
         cover_dead_space_with_bar: bool,
-        progress_behind_text: bool,
+        calculation_mode: PBCalculationMode,
         symbol: str,
         progress: int,
         show_percent: bool,
@@ -1026,9 +1027,10 @@ class Cliasi:
             Cover the space between messages with the progressbar
             If True, looks like this: [=message== ... ]
             If False, looks like this: [ message ===== ... ]
-        :param progress_behind_text:
-            Fill progressbar even behind text (imaginary)
-            Set this to True to prevent jumps every time progressbar goes over text.
+        :param calculation_mode:
+            How to fill the progressbar. Set to FULL_WIDTH for bar to go trough
+            messages. Set to ONLY_EMPTY to fill empty space between messages only.
+            Set to FULL_WIDTH_OVERWRITE to overwrite messages with the bar.
         :param symbol: Symbol to get symbol length
         :param progress: Progress to display
         :param show_percent: Show percentage at end of bar
@@ -1202,13 +1204,20 @@ class Cliasi:
         if effective_show_percent and not show_percent:
             bar_chars, occupied, inside_width, was_truncated = build_bar(True)
 
-        fillable = max(0, inside_width - (0 if progress_behind_text else len(occupied)))
+        fillable = max(
+            0,
+            inside_width
+            - (0 if calculation_mode.startswith("FULL") else len(occupied)),
+        )
         target_fill = round((p / 100.0) * fillable)
 
         filled = 0
         index = 0
         while filled < target_fill and index < inside_width:
-            if index in occupied:
+            if (
+                index in occupied
+                and calculation_mode != PBCalculationMode.FULL_WIDTH_OVERWRITE
+            ):
                 index += 1
                 continue
             bar_chars[index] = "="
@@ -1228,7 +1237,7 @@ class Cliasi:
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
         cover_dead_space_with_bar: bool = False,
-        progress_behind_text: bool = False,
+        calculation_mode: PBCalculationMode = PBCalculationMode.FULL_WIDTH,
         verbosity: int = logging.INFO,
         progress: int = 0,
         messages_stay_in_one_line: bool | None = True,
@@ -1251,9 +1260,10 @@ class Cliasi:
             Cover the space between messages with the progressbar
             If True, looks like this: [=message== ... ]
             If False, looks like this: [ message ===== ... ]
-        :param progress_behind_text:
-            Fill progressbar even behind text (imaginary)
-            Set this to True to prevent jumps every time progressbar goes over text.
+        :param calculation_mode:
+            How to fill the progressbar. Set to FULL_WIDTH for bar to go trough
+            messages. Set to ONLY_EMPTY to fill empty space between messages only.
+            Set to FULL_WIDTH_OVERWRITE to overwrite messages with the bar.
         :param verbosity: Verbosity to display
         :param progress: Progress to display
         :param messages_stay_in_one_line:
@@ -1275,7 +1285,7 @@ class Cliasi:
                 message_center,
                 message_right,
                 cover_dead_space_with_bar,
-                progress_behind_text,
+                calculation_mode,
                 "#",
                 progress,
                 show_percent,
@@ -1289,7 +1299,7 @@ class Cliasi:
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
         cover_dead_space_with_bar: bool = False,
-        progress_behind_text: bool = False,
+        calculation_mode: PBCalculationMode = PBCalculationMode.FULL_WIDTH,
         verbosity: int = logging.INFO,
         progress: int = 0,
         show_percent: bool = False,
@@ -1312,9 +1322,10 @@ class Cliasi:
             Cover the space between messages with the progressbar
             If True, looks like this: [=message== ... ]
             If False, looks like this: [ message ===== ... ]
-        :param progress_behind_text:
-            Fill progressbar even behind text (imaginary)
-            Set this to True to prevent jumps every time progressbar goes over text.
+        :param calculation_mode:
+            How to fill the progressbar. Set to FULL_WIDTH for bar to go trough
+            messages. Set to ONLY_EMPTY to fill empty space between messages only.
+            Set to FULL_WIDTH_OVERWRITE to overwrite messages with the bar.
         :param verbosity: Verbosity to display
         :param progress: Progress to display
         :param show_percent: Show percent next to the progressbar
@@ -1335,7 +1346,7 @@ class Cliasi:
                 message_center,
                 message_right,
                 cover_dead_space_with_bar,
-                progress_behind_text,
+                calculation_mode,
                 "⤓",
                 progress,
                 show_percent,
@@ -1706,7 +1717,7 @@ class Cliasi:
         message_right: str | bool | None,
         progress: int,
         cover_dead_space_with_bar: bool,
-        progress_behind_text: bool,
+        calculation_mode: PBCalculationMode,
         symbol_animation: builtins.list[str],
         show_percent: bool,
         interval: int | float,
@@ -1731,9 +1742,10 @@ class Cliasi:
             Cover the space between messages with the progressbar
             If True, looks like this: [=message== ... ]
             If False, looks like this: [ message ===== ... ]
-        :param progress_behind_text:
-            Fill progressbar even behind text (imaginary)
-            Set this to True to prevent jumps every time progressbar goes over text.
+        :param calculation_mode:
+            How to fill the progressbar. Set to FULL_WIDTH for bar to go trough
+            messages. Set to ONLY_EMPTY to fill empty space between messages only.
+            Set to FULL_WIDTH_OVERWRITE to overwrite messages with the bar.
         :param symbol_animation: List of string for symbol animation
         :param show_percent: Show percent at end of progressbar
         :param interval: Interval for animation to play
@@ -1771,7 +1783,7 @@ class Cliasi:
                     task._message_center,
                     task._message_right,
                     cover_dead_space_with_bar,
-                    progress_behind_text,
+                    calculation_mode,
                     current_symbol,
                     task._progress,
                     show_percent,
@@ -1806,7 +1818,7 @@ class Cliasi:
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
         cover_dead_space_with_bar: bool = False,
-        progress_behind_text: bool = False,
+        calculation_mode: PBCalculationMode = PBCalculationMode.FULL_WIDTH,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
@@ -1831,9 +1843,10 @@ class Cliasi:
             Cover the space between messages with the progressbar
             If True, looks like this: [=message== ... ]
             If False, looks like this: [ message ===== ... ]
-        :param progress_behind_text:
-            Fill progressbar even behind text (imaginary)
-            Set this to True to prevent jumps every time progressbar goes over text.
+        :param calculation_mode:
+            How to fill the progressbar. Set to FULL_WIDTH for bar to go trough
+            messages. Set to ONLY_EMPTY to fill empty space between messages only.
+            Set to FULL_WIDTH_OVERWRITE to overwrite messages with the bar.
         :param verbosity: Verbosity of message
         :param interval: Interval between animation frames
         :param progress: Current Progress to display
@@ -1859,7 +1872,7 @@ class Cliasi:
             message_right,
             progress,
             cover_dead_space_with_bar,
-            progress_behind_text,
+            calculation_mode,
             ANIMATION_SYMBOLS_PROGRESSBAR["default"][
                 randint(0, len(ANIMATION_SYMBOLS_PROGRESSBAR["default"]) - 1)
             ],
@@ -1876,7 +1889,7 @@ class Cliasi:
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
         cover_dead_space_with_bar: bool = False,
-        progress_behind_text: bool = False,
+        calculation_mode: PBCalculationMode = PBCalculationMode.FULL_WIDTH,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
@@ -1901,9 +1914,10 @@ class Cliasi:
             Cover the space between messages with the progressbar
             If True, looks like this: [=message== ... ]
             If False, looks like this: [ message ===== ... ]
-        :param progress_behind_text:
-            Fill progressbar even behind text (imaginary)
-            Set this to True to prevent jumps every time progressbar goes over text.
+        :param calculation_mode:
+            How to fill the progressbar. Set to FULL_WIDTH for bar to go trough
+            messages. Set to ONLY_EMPTY to fill empty space between messages only.
+            Set to FULL_WIDTH_OVERWRITE to overwrite messages with the bar.
         :param verbosity: Verbosity of message
         :param interval: Interval between animation frames
         :param progress: Current Progress to display
@@ -1929,7 +1943,7 @@ class Cliasi:
             message_right,
             progress,
             cover_dead_space_with_bar,
-            progress_behind_text,
+            calculation_mode,
             ANIMATION_SYMBOLS_PROGRESSBAR["download"][
                 randint(0, len(ANIMATION_SYMBOLS_PROGRESSBAR["download"]) - 1)
             ],

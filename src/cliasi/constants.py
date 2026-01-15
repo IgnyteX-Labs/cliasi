@@ -92,6 +92,24 @@ DEFAULT_TERMINAL_SIZE: int = 80
 """Default terminal size used for CLI rendering."""
 
 
+class PBCalculationMode(StrEnum):
+    """
+    Progressbar calculation modes for the CLI progress bars.
+
+    * FULL_WIDTH_OVERWRITE:
+        The progress characters go all the way from left to right and overwrite any text
+    * FULL_WIDTH:
+        The progress characters go all the way from left to right but
+         don't overwrite any text.
+    * ONLY_EMPTY:
+        The progress characters only fill the empty space between the text.
+    """
+
+    FULL_WIDTH_OVERWRITE = "FULL_WIDTH_OVERWRITE"
+    FULL_WIDTH = "FULL_WIDTH"
+    ONLY_EMPTY = "ONLY_EMPTY"
+
+
 class CursorPos(StrEnum):
     """Cursor positions for user input
     Useful in :meth:`~cliasi.cliasi.Cliasi.ask()` method."""

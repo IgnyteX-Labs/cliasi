@@ -14,6 +14,7 @@ as well as
 * :data:`~cliasi.SYMBOLS` collection of useful symbols
 * :class:`~cliasi.constants.TextColor` color storage for terminal text
 * :class:`~cliasi.constants.CursorPos` to set position of cursor on interactive methods
+* :class:`~cliasi.constants.PBCalculationMode` progress bar calculation modes.
 * :func:`~cliasi.logging_handler.install_logger` (to install it your own way, is done automatically)
 
 .. py:data:: cliasi.cli

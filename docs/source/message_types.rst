@@ -155,6 +155,15 @@ Progress Bars
           alt="Progress Bar (dark theme)">
    </div>
 
+Progress bar customization options
+"""""""""""""""""""""""""""""""""""""
+Progress bars can be customized with several parameters:
+
+* ``show_percent``: Whether to show the percentage completed.
+* ``cover_dead_space_with_bar``: Whether to fill alignment space of messages (there is always a space before ``message_left``) with the bar or just with spaces. False by default.
+* ``calculation_mode``: :class:`~cliasi.constants.PBCalculationMode` to customize the way the progress bar renders progress. Look at the enum documentation for details.
+
+
 Animated Progress Bars
 """"""""""""""""""""""""""
 .. code-block:: python

@@ -3,7 +3,7 @@
 __author__ = "Qrashi"
 
 from .cliasi import STDERR_STREAM, STDOUT_STREAM, Cliasi, cli
-from .constants import SYMBOLS, CursorPos, TextColor
+from .constants import SYMBOLS, CursorPos, PBCalculationMode, TextColor
 from .logging_handler import install_exception_hook, install_logger
 
 __version__: str
@@ -35,4 +35,5 @@ __all__ = [
     "SYMBOLS",
     "TextColor",
     "CursorPos",
+    "PBCalculationMode",
 ]

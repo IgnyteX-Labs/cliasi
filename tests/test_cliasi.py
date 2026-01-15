@@ -7,6 +7,7 @@ import time
 import pytest
 
 from cliasi import Cliasi, __version__, cli, constants
+from cliasi.constants import PBCalculationMode
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
@@ -508,7 +509,14 @@ def test_progressbar_alignment_left_center_right(monkeypatch):
     monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 40)
     c = Cliasi("PB", colors=False)
     bar = c._Cliasi__format_progressbar_to_screen_width(
-        "Left", "Center", "Right", True, True, "#", 100, False
+        "Left",
+        "Center",
+        "Right",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        100,
+        False,
     )
     inside = bar[1 : bar.index("]")]
     assert "Left" in inside and "Center" in inside and "Right" in inside
@@ -522,7 +530,14 @@ def test_progressbar_truncates_with_ellipsis_and_shows_percent(monkeypatch):
     monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 20)
     c = Cliasi("PB", colors=False)
     bar = c._Cliasi__format_progressbar_to_screen_width(
-        "A" * 8, "B" * 6, "C" * 6, True, True, "#", 10, False
+        "A" * 8,
+        "B" * 6,
+        "C" * 6,
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        10,
+        False,
     )
     inside = bar[1 : bar.index("]")]
     assert "…" in inside
@@ -536,7 +551,14 @@ def test_progressbar_forces_percent_when_message_long(monkeypatch):
     monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 25)
     c = Cliasi("PB", colors=False)
     bar = c._Cliasi__format_progressbar_to_screen_width(
-        "ABCDEFGHIJ", "", "", True, True, "#", 42, False
+        "ABCDEFGHIJ",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        42,
+        False,
     )
     assert "42%" in bar
     # Message may truncate; ensure at least part remains
@@ -549,7 +571,14 @@ def test_progressbar_fill_respects_message(monkeypatch):
     monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
     c = Cliasi("PB", colors=False)
     bar = c._Cliasi__format_progressbar_to_screen_width(
-        "MSG", "", "", True, True, "#", 100, True
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        100,
+        True,
     )
     inside = bar[1 : bar.index("]")]
     assert "MSG" in inside
@@ -563,10 +592,24 @@ def test_progressbar_cover_dead_space_with_bar(monkeypatch):
     c = Cliasi("PB", colors=False, max_dead_space=0)
 
     bar_spaces = c._Cliasi__format_progressbar_to_screen_width(
-        "L", "C", "R", False, False, "#", 50, False
+        "L",
+        "C",
+        "R",
+        False,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
     )
     bar_cover = c._Cliasi__format_progressbar_to_screen_width(
-        "L", "C", "R", True, False, "#", 50, False
+        "L",
+        "C",
+        "R",
+        True,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
     )
 
     inside_spaces = bar_spaces[1 : bar_spaces.index("]")]
@@ -584,22 +627,57 @@ def test_progressbar_cover_dead_space_with_bar(monkeypatch):
     assert inside_cover[pos_l - 1] == "="
 
 
-def test_progressbar_progress_behind_text_increases_fill(monkeypatch):
+def test_progressbar_calculation_mode_full_width_overwrite(monkeypatch):
     from cliasi import cliasi as cliasi_module
 
-    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 20)
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
     c = Cliasi("PB", colors=False)
-
-    bar_front = c._Cliasi__format_progressbar_to_screen_width(
-        "MSG", None, None, True, False, "#", 70, False
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH_OVERWRITE,
+        "#",
+        100,
+        False,
     )
-    bar_behind = c._Cliasi__format_progressbar_to_screen_width(
-        "MSG", None, None, True, True, "#", 70, False
+    inside = bar[1 : bar.index("]")]
+    assert "MSG" not in inside
+    assert inside.strip("=") == ""
+
+
+def test_progressbar_calculation_mode_full_vs_only_empty(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    c = Cliasi("PB", colors=False)
+    bar_full = c._Cliasi__format_progressbar_to_screen_width(
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        50,
+        False,
+    )
+    bar_empty = c._Cliasi__format_progressbar_to_screen_width(
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
     )
 
-    inside_front = bar_front[1 : bar_front.index("]")]
-    inside_behind = bar_behind[1 : bar_behind.index("]")]
+    inside_full = bar_full[1 : bar_full.index("]")]
+    inside_empty = bar_empty[1 : bar_empty.index("]")]
 
-    assert "MSG" in inside_front
-    assert "MSG" in inside_behind
-    assert inside_behind.count("=") > inside_front.count("=")
+    count_full = inside_full.count("=")
+    count_empty = inside_empty.count("=")
+
+    assert "MSG" in inside_full and "MSG" in inside_empty
+    assert count_full > count_empty  # FULL_WIDTH bases percent on total width
