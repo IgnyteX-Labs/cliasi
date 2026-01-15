@@ -42,12 +42,16 @@ for something to finish.
 from cliasi import cli
 
 # This will wait for three seconds and display an animation
-task = cli.animate_message_non_blocking("Saving files, press CRTL-C to stop")
+task = cli.animate_message_non_blocking(
+    "Saving files...",
+    message_right="[CTRL-C to abort]",
+    messages_stay_in_one_line=True
+)
 do_stuff()
-task.update("Files saved, waiting for process to quit")
+task.update("Files saved, waiting for process to quit", message_right="70%")
 tell_process_to_quit()
 task.stop()
-cli.success("Process quit")
+cli.success("Process quit", message_right="100%")
 ```
 
 ![readme_demo](docs/source/_static/asciinema/readme_demo.gif)
@@ -67,7 +71,7 @@ raise ValueError("An example error")
 
 Example CLI output (uncolored,
 see colored version in
-[docs](https://cliasi.readthedocs.io/en/latest/message_types.html).):
+[docs](https://cliasi.readthedocs.io/en/latest/message_types.html)):
 
 ```text
 X [CLI] | Uncaught exception:
@@ -76,6 +80,15 @@ X [CLI] | Traceback (most recent call last):
         |     raise ValueError("An example error")
         | ValueError: An example error
 ```
+
+### Other features
+
+cliasi has many more features like:
+
+- Logging integration
+- Custom message alignments
+- Customizable progressbars (with `PBCalculationMode`)
+- And more!
 
 ### Contributing:
 

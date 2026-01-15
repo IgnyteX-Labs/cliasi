@@ -7,6 +7,7 @@ import time
 import pytest
 
 from cliasi import Cliasi, __version__, cli, constants
+from cliasi.constants import PBCalculationMode
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
@@ -161,11 +162,11 @@ def test_verbosity_filters(capture_streams):
     assert out == ""
 
 
-def test_override_messages_stay_in_one_line_prints_no_newline(capture_streams):
+def test_messages_stay_in_one_line_prints_no_newline(capture_streams):
     out_buf, err_buf = capture_streams
     c = Cliasi("OL", messages_stay_in_one_line=False, colors=False)
-    # When override_messages_stay_in_one_line is True, it should NOT include a newline
-    c.info("same line", override_messages_stay_in_one_line=True)
+    # When messages_stay_in_one_line is True, it should NOT include a newline
+    c.info("same line", messages_stay_in_one_line=True)
     captured = out_buf.getvalue()
     assert "\n" not in captured
 
@@ -176,7 +177,7 @@ def test_progressbar_static(fixed_width, capture_streams):
     c.progressbar(
         "Working",
         progress=50,
-        override_messages_stay_in_one_line=False,
+        messages_stay_in_one_line=False,
         show_percent=True,
     )
     out = normalize_output(out_buf.getvalue())
@@ -292,7 +293,7 @@ def test_null_task_is_safe_for_animations_when_verbosity_suppressed(capture_stre
     assert task1 is not None
     # Call update with and without message multiple times; must not raise
     task1.update()
-    task1.update(message="Still hidden")
+    task1.update(message_left="Still hidden")
     task1.stop()
     task1.stop()  # idempotent
 
@@ -302,7 +303,7 @@ def test_null_task_is_safe_for_animations_when_verbosity_suppressed(capture_stre
     )
     assert task2 is not None
     task2.update()
-    task2.update(message="Still hidden DL")
+    task2.update(message_left="Still hidden DL")
     task2.stop()
     task2.stop()
 
@@ -326,7 +327,7 @@ def test_null_task_is_safe_for_progressbars_when_verbosity_suppressed(
     # update with and without progress must not raise; stop idempotent
     pb1.update()
     pb1.update(progress=20)
-    pb1.update(message="noop", progress=30)
+    pb1.update(message_left="noop", progress=30)
     pb1.stop()
     pb1.stop()
 
@@ -500,3 +501,221 @@ def test_install_logger_replaces_stream_handlers():
         for h in old_handlers:
             root.addHandler(h)
         root.setLevel(old_level)
+
+
+def test_progressbar_alignment_left_center_right(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 40)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "Left",
+        "Center",
+        "Right",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        100,
+        False,
+    )
+    inside = bar[1 : bar.index("]")]
+    assert "Left" in inside and "Center" in inside and "Right" in inside
+    assert inside.find("Left") < inside.find("Center") < inside.find("Right")
+    assert inside.rstrip().endswith("Right=")
+
+
+def test_progressbar_truncates_with_ellipsis_and_shows_percent(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 20)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "A" * 8,
+        "B" * 6,
+        "C" * 6,
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        10,
+        False,
+    )
+    inside = bar[1 : bar.index("]")]
+    assert "…" in inside
+    assert len(inside) <= 8
+    assert bar.rstrip().endswith("%")
+
+
+def test_progressbar_forces_percent_when_message_long(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 25)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "ABCDEFGHIJ",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        42,
+        False,
+    )
+    assert "42%" in bar
+    # Message may truncate; ensure at least part remains
+    assert "[" in bar and "]" in bar
+
+
+def test_progressbar_fill_respects_message(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        100,
+        True,
+    )
+    inside = bar[1 : bar.index("]")]
+    assert "MSG" in inside
+    assert inside.count("=") == len(inside) - len("MSG")
+
+
+def test_progressbar_calculation_mode_full_width_overwrite(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    c = Cliasi("PB", colors=False)
+    bar = c._Cliasi__format_progressbar_to_screen_width(
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH_OVERWRITE,
+        "#",
+        100,
+        False,
+    )
+    inside = bar[1 : bar.index("]")]
+    assert "MSG" not in inside
+    assert inside.strip("=") == ""
+
+
+def test_progressbar_calculation_mode_full_vs_only_empty(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    c = Cliasi("PB", colors=False)
+    bar_full = c._Cliasi__format_progressbar_to_screen_width(
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.FULL_WIDTH,
+        "#",
+        50,
+        False,
+    )
+    bar_empty = c._Cliasi__format_progressbar_to_screen_width(
+        "MSG",
+        "",
+        "",
+        True,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
+    )
+
+    inside_full = bar_full[1 : bar_full.index("]")]
+    inside_empty = bar_empty[1 : bar_empty.index("]")]
+
+    count_full = inside_full.count("=")
+    count_empty = inside_empty.count("=")
+
+    assert "MSG" in inside_full and "MSG" in inside_empty
+    assert count_full > count_empty  # FULL_WIDTH bases percent on total width
+
+
+def test_animated_progressbar_calculation_modes(monkeypatch, capture_streams):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    out_buf, err_buf = capture_streams
+
+    c = Cliasi("APBM", messages_stay_in_one_line=True, colors=False)
+
+    task_overwrite = c.progressbar_animated_normal(
+        "MSG",
+        calculation_mode=PBCalculationMode.FULL_WIDTH_OVERWRITE,
+        interval=0.01,
+        progress=100,
+    )
+    # Let a few frames render
+    import time
+
+    time.sleep(0.03)
+    task_overwrite.stop()
+    out_overwrite = normalize_output(out_buf.getvalue())
+
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
+    task_empty = c.progressbar_animated_normal(
+        "MSG",
+        calculation_mode=PBCalculationMode.ONLY_EMPTY,
+        interval=0.01,
+        progress=40,
+    )
+    time.sleep(0.03)
+    task_empty.stop()
+    out_empty = normalize_output(out_buf.getvalue())
+
+    assert "MSG" not in out_overwrite
+    assert "MSG" in out_empty
+
+
+def test_progressbar_cover_dead_space_with_bar(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    c = Cliasi("PB", colors=False, max_dead_space=0)
+
+    bar_spaces = c._Cliasi__format_progressbar_to_screen_width(
+        "L",
+        "C",
+        "R",
+        False,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
+    )
+    bar_cover = c._Cliasi__format_progressbar_to_screen_width(
+        "L",
+        "C",
+        "R",
+        True,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
+    )
+
+    inside_spaces = bar_spaces[1 : bar_spaces.index("]")]
+    inside_cover = bar_cover[1 : bar_cover.index("]")]
+
+    pos_l = inside_spaces.index("L")
+    pos_c = inside_spaces.index("C")
+    pos_r = inside_spaces.index("R")
+
+    assert inside_spaces[pos_l + 1 : pos_c] == " "
+    assert inside_spaces[pos_c + 1 : pos_r] == " "
+    assert inside_cover[pos_l + 1 : pos_c].strip("=") == ""
+    assert inside_cover[pos_c + 1 : pos_r].strip("=") == ""
+    assert inside_spaces[pos_l - 1] == " "
+    assert inside_cover[pos_l - 1] == "="

@@ -162,7 +162,7 @@ def install_exception_hook(cli_instance: Cliasi) -> None:
             cli_instance.fail(
                 "Uncaught exception:",
                 verbosity=logging.ERROR,
-                override_messages_stay_in_one_line=False,
+                messages_stay_in_one_line=False,
             )
             exception_text = "".join(
                 traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -170,7 +170,7 @@ def install_exception_hook(cli_instance: Cliasi) -> None:
             cli_instance.fail(
                 exception_text,
                 verbosity=logging.ERROR,
-                override_messages_stay_in_one_line=False,
+                messages_stay_in_one_line=False,
             )
         except Exception:
             # If Cliasi methods fail while handling the exception,

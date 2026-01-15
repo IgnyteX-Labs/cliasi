@@ -33,11 +33,11 @@ To install the git hooks, run:
 Running Tests and Linting
 -------------------------
 
-You can run all quality checks (lint, typecheck, and tests) using:
+You can run all quality checks (lint, format, typecheck, and tests) using:
 
 .. code-block:: bash
 
-    make all
+    make check
 
 Individual checks:
 

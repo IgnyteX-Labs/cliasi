@@ -23,7 +23,7 @@ cli.newline()
 
 cli.set_prefix("LINEBREAKS")
 cli.message("LINEBREAK TEST\nSUCCESSFUL")
-cli.info("TEST THISWILLNOTBECUTOFF!" * 100)
+cli.info("TEST THISWILLNOTBECUTOFF! " * 100)
 
 
 cli.set_prefix("ANIMATED")
@@ -38,15 +38,15 @@ task.stop()
 cli.set_prefix("PROGRESS")
 cli.newline()
 cli.progressbar(
-    "PROGRESS", progress=70, override_messages_stay_in_one_line=False, show_percent=True
+    "PROGRESS", progress=70, messages_stay_in_one_line=False, show_percent=True
 )
 cli.progressbar_download(
-    "PROGRESS DOWNLOAD", progress=70, override_messages_stay_in_one_line=False
+    "PROGRESS DOWNLOAD", progress=70, messages_stay_in_one_line=False
 )
 task = cli.progressbar_animated_normal(
     "PROGRESS ANIMATED",
     progress=10,
-    override_messages_stay_in_one_line=False,
+    messages_stay_in_one_line=False,
     unicorn=True,
 )
 sleep(1)
@@ -58,7 +58,7 @@ task.stop()
 task = cli.progressbar_animated_download(
     "PROGRESS ANIMATED DOWNLOAD",
     progress=10,
-    override_messages_stay_in_one_line=False,
+    messages_stay_in_one_line=False,
     show_percent=True,
     unicorn=True,
     interval=0.05,

@@ -22,3 +22,45 @@ body[data-theme="light"] .asciinema_demo-light {
 body[data-theme="light"] .asciinema_demo-dark {
     display: none;
 }
+
+/* Flex-based alignment preview for docs */
+.cliasi-align-block {
+    display: grid;
+    gap: 0.15rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    max-width: 100%;
+    overflow-x: auto;
+    box-sizing: border-box;
+    font-size: var(--code-font-size);
+    line-height: 1.5;
+}
+
+.cliasi-align-block.highlight {
+    padding: 0.5rem 0.75rem;
+}
+
+.cliasi-align-preview {
+    display: flex;
+    align-items: baseline;
+    gap: 1ch;
+    font-family: var(--font-stack--monospace);
+    max-width: 100%;
+    min-width: 0;
+}
+
+.cliasi-align-preview .left {
+    flex: 0 0 auto;
+}
+
+.cliasi-align-preview .center {
+    flex: 1 1 auto;
+    text-align: center;
+}
+
+.cliasi-align-preview .right {
+    flex: 0 0 auto;
+    margin-left: auto;
+    text-align: right;
+}
