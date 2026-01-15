@@ -585,48 +585,6 @@ def test_progressbar_fill_respects_message(monkeypatch):
     assert inside.count("=") == len(inside) - len("MSG")
 
 
-def test_progressbar_cover_dead_space_with_bar(monkeypatch):
-    from cliasi import cliasi as cliasi_module
-
-    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
-    c = Cliasi("PB", colors=False, max_dead_space=0)
-
-    bar_spaces = c._Cliasi__format_progressbar_to_screen_width(
-        "L",
-        "C",
-        "R",
-        False,
-        PBCalculationMode.ONLY_EMPTY,
-        "#",
-        50,
-        False,
-    )
-    bar_cover = c._Cliasi__format_progressbar_to_screen_width(
-        "L",
-        "C",
-        "R",
-        True,
-        PBCalculationMode.ONLY_EMPTY,
-        "#",
-        50,
-        False,
-    )
-
-    inside_spaces = bar_spaces[1 : bar_spaces.index("]")]
-    inside_cover = bar_cover[1 : bar_cover.index("]")]
-
-    pos_l = inside_spaces.index("L")
-    pos_c = inside_spaces.index("C")
-    pos_r = inside_spaces.index("R")
-
-    assert inside_spaces[pos_l + 1 : pos_c] == " "
-    assert inside_spaces[pos_c + 1 : pos_r] == " "
-    assert inside_cover[pos_l + 1 : pos_c].strip("=") == ""
-    assert inside_cover[pos_c + 1 : pos_r].strip("=") == ""
-    assert inside_spaces[pos_l - 1] == " "
-    assert inside_cover[pos_l - 1] == "="
-
-
 def test_progressbar_calculation_mode_full_width_overwrite(monkeypatch):
     from cliasi import cliasi as cliasi_module
 
@@ -681,3 +639,83 @@ def test_progressbar_calculation_mode_full_vs_only_empty(monkeypatch):
 
     assert "MSG" in inside_full and "MSG" in inside_empty
     assert count_full > count_empty  # FULL_WIDTH bases percent on total width
+
+
+def test_animated_progressbar_calculation_modes(monkeypatch, capture_streams):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    out_buf, err_buf = capture_streams
+
+    c = Cliasi("APBM", messages_stay_in_one_line=True, colors=False)
+
+    task_overwrite = c.progressbar_animated_normal(
+        "MSG",
+        calculation_mode=PBCalculationMode.FULL_WIDTH_OVERWRITE,
+        interval=0.01,
+        progress=100,
+    )
+    # Let a few frames render
+    import time
+
+    time.sleep(0.03)
+    task_overwrite.stop()
+    out_overwrite = normalize_output(out_buf.getvalue())
+
+    out_buf.truncate(0)
+    out_buf.seek(0)
+
+    task_empty = c.progressbar_animated_normal(
+        "MSG",
+        calculation_mode=PBCalculationMode.ONLY_EMPTY,
+        interval=0.01,
+        progress=40,
+    )
+    time.sleep(0.03)
+    task_empty.stop()
+    out_empty = normalize_output(out_buf.getvalue())
+
+    assert "MSG" not in out_overwrite
+    assert "MSG" in out_empty
+
+
+def test_progressbar_cover_dead_space_with_bar(monkeypatch):
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 30)
+    c = Cliasi("PB", colors=False, max_dead_space=0)
+
+    bar_spaces = c._Cliasi__format_progressbar_to_screen_width(
+        "L",
+        "C",
+        "R",
+        False,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
+    )
+    bar_cover = c._Cliasi__format_progressbar_to_screen_width(
+        "L",
+        "C",
+        "R",
+        True,
+        PBCalculationMode.ONLY_EMPTY,
+        "#",
+        50,
+        False,
+    )
+
+    inside_spaces = bar_spaces[1 : bar_spaces.index("]")]
+    inside_cover = bar_cover[1 : bar_cover.index("]")]
+
+    pos_l = inside_spaces.index("L")
+    pos_c = inside_spaces.index("C")
+    pos_r = inside_spaces.index("R")
+
+    assert inside_spaces[pos_l + 1 : pos_c] == " "
+    assert inside_spaces[pos_c + 1 : pos_r] == " "
+    assert inside_cover[pos_l + 1 : pos_c].strip("=") == ""
+    assert inside_cover[pos_c + 1 : pos_r].strip("=") == ""
+    assert inside_spaces[pos_l - 1] == " "
+    assert inside_cover[pos_l - 1] == "="

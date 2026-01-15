@@ -87,7 +87,7 @@ cliasi has many more features like:
 
 - Logging integration
 - Custom message alignments
-- Customizable progressbars
+- Customizable progressbars (with `PBCalculationMode`)
 - And more!
 
 ### Contributing:

@@ -155,14 +155,6 @@ Progress Bars
           alt="Progress Bar (dark theme)">
    </div>
 
-Progress bar customization options
-"""""""""""""""""""""""""""""""""""""
-Progress bars can be customized with several parameters:
-
-* ``show_percent``: Whether to show the percentage completed.
-* ``cover_dead_space_with_bar``: Whether to fill alignment space of messages (there is always a space before ``message_left``) with the bar or just with spaces. False by default.
-* ``calculation_mode``: :class:`~cliasi.constants.PBCalculationMode` to customize the way the progress bar renders progress. Look at the enum documentation for details.
-
 
 Animated Progress Bars
 """"""""""""""""""""""""""
@@ -192,6 +184,64 @@ Animated Progress Bars
         <img src="_static/asciinema/animated_progress_bar_demo-dark.gif"
           class="asciinema_demo-dark"
           alt="Animated Progress Bar (dark theme)">
+    </div>
+
+Progress bar customization options
+"""""""""""""""""""""""""""""""""""""
+Progress bars can be customized with several parameters:
+
+* ``show_percent``: Whether to show the percentage completed.
+* ``cover_dead_space_with_bar``: Whether to fill alignment space of messages (there is always a space before ``message_left``) with the bar or just with spaces. False by default.
+* ``calculation_mode``: :class:`~cliasi.constants.PBCalculationMode` to customize the way the progress bar renders progress. Look at the enum documentation for details.
+
+Example usage of calculation modes:
+
+.. code-block:: python
+    :caption: examples/calculation_modes_demo.py
+
+    from time import sleep
+    from cliasi import PBCalculationMode, cli
+
+    for i in range(100):
+        sleep(0.025)
+        # Fills across the full width but skips text
+        cli.progressbar(
+            "progress goes",
+            message_right="under text",
+            progress=i,
+            calculation_mode=PBCalculationMode.FULL_WIDTH,
+            show_percent=True,
+        )
+
+    for i in range(100):
+        sleep(0.025)
+        # Fills only empty space between text segments
+        cli.progressbar_download(
+            message_left="progress goes between here",
+            message_right="and there",
+            progress=i,
+            calculation_mode=PBCalculationMode.ONLY_EMPTY,
+        )
+
+    for i in range(100):
+        sleep(0.025)
+        # Overwrites text when the bar reaches it (useful for dense bars)
+        cli.progressbar(
+            message_left=None,
+            message_right="This text will be overwritten",
+            progress=i,
+            calculation_mode=PBCalculationMode.FULL_WIDTH_OVERWRITE,
+        )
+
+.. raw:: html
+
+    <div class="asciinema-demo">
+        <img src="_static/asciinema/calculation_modes_demo-light.gif"
+        class="asciinema_demo-light"
+        alt="Different calculation modes (light theme)">
+        <img src="_static/asciinema/calculation_modes_demo-dark.gif"
+        class="asciinema_demo-dark"
+        alt="Different calculation modes (dark theme)">
     </div>
 
 User Input
