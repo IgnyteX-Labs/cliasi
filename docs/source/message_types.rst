@@ -246,6 +246,10 @@ or set the parameters themselves to the desired text.
     # False because parameter message_left is required to be set. Can also use ""
     cli.info("From left", message_center="to the middle", message_right="to the right")
 
+.. warning::
+    The actual colors and symbols below may vary
+    depending on your terminal and its settings.
+
 .. raw:: html
 
     <div class="cliasi-align-block highlight">
