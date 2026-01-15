@@ -189,7 +189,7 @@ class Cliasi:
             else messages_stay_in_one_line
         )
         preamble_len = self.__space_before_message + len(symbol) + 1
-        content_space = _terminal_size() - preamble_len
+        content_space = max(1, _terminal_size() - preamble_len)
         # space(1) + symbol + space_before_message (prefix + seperator) -> message
 
         reset_message_left = False
@@ -951,28 +951,28 @@ class Cliasi:
             randint(0, len(ANIMATIONS_MAIN) - 1),
         )
         symbol_frames = ANIMATIONS_SYMBOLS[selection_symbol]
-        frames = ANIMATIONS_MAIN[selection_animation]["frames"]
-        if not isinstance(frames, list):
+        frames_val = ANIMATIONS_MAIN[selection_animation]["frames"]
+        if not isinstance(frames_val, list):
             self.warn(
                 f"CLIASI error: "
-                f"Animation frames must be a list, got {type(frames).__name__}."
+                f"Animation frames must be a list, got {type(frames_val).__name__}."
                 f" Falling back to default frames.",
                 messages_stay_in_one_line=False,
             )
-        animation_frames: list[str] = frames if isinstance(frames, list) else ["*", "-"]
+        animation_frames: list[str] = (
+            frames_val if isinstance(frames_val, list) else ["*", "-"]
+        )
+        frame_every_val = ANIMATIONS_MAIN[selection_animation]["frame_every"]
+        if not isinstance(frame_every_val, int):
+            self.warn(
+                f"CLIASI error: "
+                f"frame_every must be an int, got {type(frame_every_val).__name__}."
+                f" Falling back to 1.",
+                messages_stay_in_one_line=False,
+            )
+        frame_every: int = frame_every_val if isinstance(frame_every_val, int) else 1
         index_total = 0
         while remaining > 0:
-            frame_every_val = ANIMATIONS_MAIN[selection_animation]["frame_every"]
-            if not isinstance(frame_every_val, int):
-                self.warn(
-                    f"CLIASI error: "
-                    f"frame_every must be an int, got {type(frame_every_val).__name__}."
-                    f" Falling back to 1.",
-                    messages_stay_in_one_line=False,
-                )
-            frame_every: int = (
-                frame_every_val if isinstance(frame_every_val, int) else 1
-            )
             self.__show_animation_frame(
                 message_left,
                 message_center,
@@ -1022,6 +1022,13 @@ class Cliasi:
             Message to display in the center of the bar or bool flag to disable
         :param message_right:
             Message to display on the right side of the bar or bool flag to disable
+        :param cover_dead_space_with_bar:
+            Cover the space between messages with the progressbar
+            If True, looks like this: [=message== ... ]
+            If False, looks like this: [ message ===== ... ]
+        :param progress_behind_text:
+            Fill progressbar even behind text (imaginary)
+            Set this to True to prevent jumps every time progressbar goes over text.
         :param symbol: Symbol to get symbol length
         :param progress: Progress to display
         :param show_percent: Show percentage at end of bar
@@ -1456,35 +1463,32 @@ class Cliasi:
             else self.messages_stay_in_one_line,
         )
 
+        frames_val = main_animation["frames"]
+        if not isinstance(frames_val, list):
+            self.warn(
+                f"CLIASI error: "
+                f"Animation frames must be a list, got {type(frames_val).__name__}."
+                f" Falling back to default frames.",
+                messages_stay_in_one_line=False,
+            )
+        frames: list[str] = frames_val if isinstance(frames_val, list) else ["*", "-"]
+
+        frame_every_val = main_animation["frame_every"]
+        if not isinstance(frame_every_val, int):
+            self.warn(
+                f"CLIASI error: "
+                f"frame_every must be an int, got {type(frame_every_val).__name__}."
+                f" Falling back to 1.",
+                messages_stay_in_one_line=False,
+            )
+        frame_every: int = frame_every_val if isinstance(frame_every_val, int) else 1
+
         def update() -> None:
             """
             Update the animation to the current frame
 
             :return: None
             """
-            frames_val = main_animation["frames"]
-            if not isinstance(frames_val, list):
-                self.warn(
-                    f"CLIASI error: "
-                    f"Animation frames must be a list, got {type(frames_val).__name__}."
-                    f" Falling back to default frames.",
-                    messages_stay_in_one_line=False,
-                )
-            frames: list[str] = (
-                frames_val if isinstance(frames_val, list) else ["*", "-"]
-            )
-            frame_every_val = main_animation["frame_every"]
-            if not isinstance(frame_every_val, int):
-                self.warn(
-                    f"CLIASI error: "
-                    f"frame_every must be an int, got {type(frame_every_val).__name__}."
-                    f" Falling back to 1.",
-                    messages_stay_in_one_line=False,
-                )
-            frame_every: int = (
-                frame_every_val if isinstance(frame_every_val, int) else 1
-            )
-
             self.__show_animation_frame(
                 task._message_left,
                 task._message_center,
