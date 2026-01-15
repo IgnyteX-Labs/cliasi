@@ -38,7 +38,7 @@ class TestAnimationFallbacks(unittest.TestCase):
             "CLIASI error: "
             "Animation frames must be a list, got str."
             " Falling back to default frames.",
-            override_messages_stay_in_one_line=False,
+            messages_stay_in_one_line=False,
         )
 
     def test_animate_message_blocking_fallback_frame_every(self):
@@ -52,7 +52,7 @@ class TestAnimationFallbacks(unittest.TestCase):
 
         self.mock_warn.assert_any_call(
             "CLIASI error: frame_every must be an int, got str. Falling back to 1.",
-            override_messages_stay_in_one_line=False,
+            messages_stay_in_one_line=False,
         )
 
     def test_non_blocking_animation_fallback_frames(self):
@@ -72,7 +72,7 @@ class TestAnimationFallbacks(unittest.TestCase):
             "CLIASI error: "
             "Animation frames must be a list, got NoneType."
             " Falling back to default frames.",
-            override_messages_stay_in_one_line=False,
+            messages_stay_in_one_line=False,
         )
 
 

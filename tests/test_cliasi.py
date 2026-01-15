@@ -161,11 +161,11 @@ def test_verbosity_filters(capture_streams):
     assert out == ""
 
 
-def test_override_messages_stay_in_one_line_prints_no_newline(capture_streams):
+def test_messages_stay_in_one_line_prints_no_newline(capture_streams):
     out_buf, err_buf = capture_streams
     c = Cliasi("OL", messages_stay_in_one_line=False, colors=False)
-    # When override_messages_stay_in_one_line is True, it should NOT include a newline
-    c.info("same line", override_messages_stay_in_one_line=True)
+    # When messages_stay_in_one_line is True, it should NOT include a newline
+    c.info("same line", messages_stay_in_one_line=True)
     captured = out_buf.getvalue()
     assert "\n" not in captured
 
@@ -176,7 +176,7 @@ def test_progressbar_static(fixed_width, capture_streams):
     c.progressbar(
         "Working",
         progress=50,
-        override_messages_stay_in_one_line=False,
+        messages_stay_in_one_line=False,
         show_percent=True,
     )
     out = normalize_output(out_buf.getvalue())
