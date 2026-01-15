@@ -1005,6 +1005,8 @@ class Cliasi:
         message_left: str | bool | None,
         message_center: str | bool | None,
         message_right: str | bool | None,
+        cover_dead_space_with_bar: bool,
+        progress_behind_text: bool,
         symbol: str,
         progress: int,
         show_percent: bool,
@@ -1110,6 +1112,8 @@ class Cliasi:
                         continue
                     if cursor < width:
                         bar_chars[cursor] = " "
+                        if not cover_dead_space_with_bar:
+                            occupied.add(cursor)
                         cursor += 1
                     for idx, ch in enumerate(m):
                         pos = cursor + idx
@@ -1118,6 +1122,8 @@ class Cliasi:
                         bar_chars[pos] = ch
                         occupied.add(pos)
                     cursor += len(m)
+                if not cover_dead_space_with_bar:
+                    occupied.add(cursor)
                 return bar_chars, occupied, width, truncated
             # All three messages have space, align them
 
@@ -1125,6 +1131,8 @@ class Cliasi:
             if m_left:
                 left_padding = 1 if width > 1 else 0
                 start = left_padding
+                if not cover_dead_space_with_bar and width > 1:
+                    occupied.add(0)
                 for idx, ch in enumerate(m_left):
                     pos = start + idx
                     if pos >= width:
@@ -1132,6 +1140,8 @@ class Cliasi:
                     bar_chars[pos] = ch
                     occupied.add(pos)
                 current_end = start + len(m_left)
+                if not cover_dead_space_with_bar:
+                    occupied.add(current_end)
 
             if m_center:
                 center_start = max(0, (width - len(m_center)) // 2)
@@ -1161,6 +1171,8 @@ class Cliasi:
                         occupied.add(current_end)
                         current_end += 1
                     right_start = current_end
+                if not cover_dead_space_with_bar:
+                    occupied.add(max(right_start - 1, 0))
                 for idx, ch in enumerate(m_right):
                     pos = right_start + idx
                     if pos >= width:
@@ -1168,6 +1180,8 @@ class Cliasi:
                     bar_chars[pos] = ch
                     occupied.add(pos)
                 # trailing space stays unoccupied so fill can reach the end
+                if not cover_dead_space_with_bar:
+                    occupied.add(right_start + (len(m_right) - 1) + trailing_space)
 
             return bar_chars, occupied, width, truncated
 
@@ -1181,7 +1195,7 @@ class Cliasi:
         if effective_show_percent and not show_percent:
             bar_chars, occupied, inside_width, was_truncated = build_bar(True)
 
-        fillable = max(0, inside_width - len(occupied))
+        fillable = max(0, inside_width - (0 if progress_behind_text else len(occupied)))
         target_fill = round((p / 100.0) * fillable)
 
         filled = 0
@@ -1206,6 +1220,8 @@ class Cliasi:
         message_left: str | bool | None,
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
+        cover_dead_space_with_bar: bool = False,
+        progress_behind_text: bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         messages_stay_in_one_line: bool | None = True,
@@ -1224,6 +1240,13 @@ class Cliasi:
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
+        :param cover_dead_space_with_bar:
+            Cover the space between messages with the progressbar
+            If True, looks like this: [=message== ... ]
+            If False, looks like this: [ message ===== ... ]
+        :param progress_behind_text:
+            Fill progressbar even behind text (imaginary)
+            Set this to True to prevent jumps every time progressbar goes over text.
         :param verbosity: Verbosity to display
         :param progress: Progress to display
         :param messages_stay_in_one_line:
@@ -1241,7 +1264,14 @@ class Cliasi:
             TextColor.BLUE,
             "#",
             self.__format_progressbar_to_screen_width(
-                message_left, message_center, message_right, "#", progress, show_percent
+                message_left,
+                message_center,
+                message_right,
+                cover_dead_space_with_bar,
+                progress_behind_text,
+                "#",
+                progress,
+                show_percent,
             ),
             messages_stay_in_one_line,
         )
@@ -1251,6 +1281,8 @@ class Cliasi:
         message_left: str | bool | None,
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
+        cover_dead_space_with_bar: bool = False,
+        progress_behind_text: bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         show_percent: bool = False,
@@ -1269,6 +1301,13 @@ class Cliasi:
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
+        :param cover_dead_space_with_bar:
+            Cover the space between messages with the progressbar
+            If True, looks like this: [=message== ... ]
+            If False, looks like this: [ message ===== ... ]
+        :param progress_behind_text:
+            Fill progressbar even behind text (imaginary)
+            Set this to True to prevent jumps every time progressbar goes over text.
         :param verbosity: Verbosity to display
         :param progress: Progress to display
         :param show_percent: Show percent next to the progressbar
@@ -1285,7 +1324,14 @@ class Cliasi:
             TextColor.BRIGHT_CYAN,
             "⤓",
             self.__format_progressbar_to_screen_width(
-                message_left, message_center, message_right, "⤓", progress, show_percent
+                message_left,
+                message_center,
+                message_right,
+                cover_dead_space_with_bar,
+                progress_behind_text,
+                "⤓",
+                progress,
+                show_percent,
             ),
             messages_stay_in_one_line,
         )
@@ -1655,6 +1701,8 @@ class Cliasi:
         message_center: str | bool | None,
         message_right: str | bool | None,
         progress: int,
+        cover_dead_space_with_bar: bool,
+        progress_behind_text: bool,
         symbol_animation: builtins.list[str],
         show_percent: bool,
         interval: int | float,
@@ -1675,6 +1723,13 @@ class Cliasi:
             Message to display on the right side of the bar
             or bool flag to enable / disable
         :param progress: Initial progress
+        :param cover_dead_space_with_bar:
+            Cover the space between messages with the progressbar
+            If True, looks like this: [=message== ... ]
+            If False, looks like this: [ message ===== ... ]
+        :param progress_behind_text:
+            Fill progressbar even behind text (imaginary)
+            Set this to True to prevent jumps every time progressbar goes over text.
         :param symbol_animation: List of string for symbol animation
         :param show_percent: Show percent at end of progressbar
         :param interval: Interval for animation to play
@@ -1711,6 +1766,8 @@ class Cliasi:
                     task._message_left,
                     task._message_center,
                     task._message_right,
+                    cover_dead_space_with_bar,
+                    progress_behind_text,
                     current_symbol,
                     task._progress,
                     show_percent,
@@ -1744,6 +1801,8 @@ class Cliasi:
         message_left: str | bool | None,
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
+        cover_dead_space_with_bar: bool = False,
+        progress_behind_text: bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
@@ -1764,6 +1823,13 @@ class Cliasi:
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
+        :param cover_dead_space_with_bar:
+            Cover the space between messages with the progressbar
+            If True, looks like this: [=message== ... ]
+            If False, looks like this: [ message ===== ... ]
+        :param progress_behind_text:
+            Fill progressbar even behind text (imaginary)
+            Set this to True to prevent jumps every time progressbar goes over text.
         :param verbosity: Verbosity of message
         :param interval: Interval between animation frames
         :param progress: Current Progress to display
@@ -1788,6 +1854,8 @@ class Cliasi:
             message_center,
             message_right,
             progress,
+            cover_dead_space_with_bar,
+            progress_behind_text,
             ANIMATION_SYMBOLS_PROGRESSBAR["default"][
                 randint(0, len(ANIMATION_SYMBOLS_PROGRESSBAR["default"]) - 1)
             ],
@@ -1803,6 +1871,8 @@ class Cliasi:
         message_left: str | bool | None,
         message_center: str | bool | None = False,
         message_right: str | bool | None = False,
+        cover_dead_space_with_bar: bool = False,
+        progress_behind_text: bool = False,
         verbosity: int = logging.INFO,
         progress: int = 0,
         interval: int | float = 0.25,
@@ -1823,6 +1893,13 @@ class Cliasi:
         :param message_right:
             Message to display on the right side of the bar
             or bool flag to enable / disable
+        :param cover_dead_space_with_bar:
+            Cover the space between messages with the progressbar
+            If True, looks like this: [=message== ... ]
+            If False, looks like this: [ message ===== ... ]
+        :param progress_behind_text:
+            Fill progressbar even behind text (imaginary)
+            Set this to True to prevent jumps every time progressbar goes over text.
         :param verbosity: Verbosity of message
         :param interval: Interval between animation frames
         :param progress: Current Progress to display
@@ -1847,6 +1924,8 @@ class Cliasi:
             message_center,
             message_right,
             progress,
+            cover_dead_space_with_bar,
+            progress_behind_text,
             ANIMATION_SYMBOLS_PROGRESSBAR["download"][
                 randint(0, len(ANIMATION_SYMBOLS_PROGRESSBAR["download"]) - 1)
             ],
