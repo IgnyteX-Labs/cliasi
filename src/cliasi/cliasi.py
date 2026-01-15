@@ -445,7 +445,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -492,7 +492,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -538,7 +538,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -584,7 +584,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -630,7 +630,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -676,7 +676,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -721,7 +721,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -767,7 +767,7 @@ class Cliasi:
         :param messages_stay_in_one_line:
             Override the message to stay in one line
             (None to use cliasi instance setting)
-            
+
         :return: None
         """
         if self.__verbose_check(verbosity):
@@ -826,7 +826,7 @@ class Cliasi:
             Only available when output is not longer than one line OR
             if last line has space for message_right and the cursor position
             is LEFT or RIGHT
-            
+
         :return: The user input as a string.
         """
 
