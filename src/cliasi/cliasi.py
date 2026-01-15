@@ -65,7 +65,7 @@ class Cliasi:
     def __init__(
         self,
         prefix: str = "",
-            messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
         colors: bool = True,
         min_verbose_level: int | None = None,
         seperator: str = "|",
@@ -1541,7 +1541,7 @@ class Cliasi:
         interval: int | float = 0.25,
         unicorn: bool = False,
         messages_stay_in_one_line: bool | None = None,
-    ) -> NonBlockingAnimationTask | None:
+    ) -> NonBlockingAnimationTask:
         """
         Display a loading animation in the background
         Stop animation by calling .stop() on the returned object
@@ -1598,7 +1598,7 @@ class Cliasi:
         interval: int | float = 0.25,
         unicorn: bool = False,
         messages_stay_in_one_line: bool | None = True,
-    ) -> NonBlockingAnimationTask | None:
+    ) -> NonBlockingAnimationTask:
         """
         Display a downloading animation in the background
 
