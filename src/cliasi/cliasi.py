@@ -118,6 +118,14 @@ class Cliasi:
             3 + len(self.__prefix) + len(self.__prefix_seperator)
         )
 
+    def infer_settings(self) -> None:
+        """
+        Infer settings from the global cli instance.
+
+        """
+        self.min_verbose_level = cli.min_verbose_level
+        self.messages_stay_in_one_line = cli.messages_stay_in_one_line
+
     def set_seperator(self, seperator: str) -> None:
         """
         Set the seperator between prefix and message

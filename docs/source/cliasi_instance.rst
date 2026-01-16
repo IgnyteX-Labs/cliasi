@@ -79,7 +79,7 @@ and set the level after importing the module like this:
     :caption: main_program.py
 
     from cliasi import cli
-    from databasee_module import initialize_database
+    from database_module import initialize_database
 
     def main():
         cli.min_verbose_level = 2  # Only warnings and errors
@@ -89,7 +89,9 @@ The Cliasi instance in database **will not infer** the verbosity level from the 
 as it is created before the global instance's verbosity level is set.
 
 To avoid this, either set the verbosity level before importing any modules that create their own Cliasi instances
-or create Cliasi instances only in functions / after the global instance's settings are done.
+or create Cliasi instances only in functions / after the global instance's settings have been set.
+
+You can also use the :meth:`~cliasi.cliasi.Cliasi.infer_settings` method to manually infer the settings from the global instance.
 
 Below are fixed versions of the above code snippets:
 
@@ -100,7 +102,7 @@ Below are fixed versions of the above code snippets:
 
     def main():
         cli.min_verbose_level = 2  # Only warnings and errors
-        from databasee_module import initialize_database
+        from database_module import initialize_database
         initialize_database()
 
 .. code-block:: python
@@ -108,8 +110,8 @@ Below are fixed versions of the above code snippets:
 
     from cliasi import Cliasi
 
-    cli: Cliasi
+    cli: Cliasi = Cliasi("DB")
 
     def initialize_database():
-        cli = Cliasi("DB")
+        cli.infer_settings()
         pass
