@@ -9,6 +9,37 @@ communicate different program scopes.
 Part A of your program has one instance with its own prefix
 while part B has another instance with a different prefix.
 
+.. code-block:: python
+
+    from cliasi import Cliasi
+
+    def scope_1():
+        cli = Cliasi("scope_1")
+        cli.success("Message will be prefixed with [scope_1]")
+
+    def scope_2():
+        cli = Cliasi("scope_2")
+        cli.warning("Message will be prefixed with [scope_2]")
+
+Instance options
+"""""""""""""""""
+Every cliasi instance has the following parameters / methods:
+
+* :meth:`~cliasi.cliasi.Cliasi.set_prefix()` - to set the prefix for every message from this instance
+* :meth:`~cliasi.cliasi.Cliasi.infer_settings()` - to infer settings like the ones below from the global instance, see :ref:`global_inference`
+* :attr:`~cliasi.cliasi.Cliasi.enable_colors` - whether to use colored output for this instance
+* :attr:`~cliasi.cliasi.Cliasi.max_dead_space` - maximum number of empty space between aligned messages for this instance. See :ref:`max_dead_space`
+* :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` - verbosity level for this instance
+* :attr:`~cliasi.cliasi.Cliasi.messages_stay_in_one_line` - whether messages should stay in one line for this instance
+
+.. note::
+    ``messages_stay_in_one_line`` does not affect progress bars, animations and messages
+    that go over multiple lines due to API limitations.
+
+.. _global_inference:
+
+Global inference
+"""""""""""""""""
 :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` **and**
 :attr:`~cliasi.cliasi.Cliasi.messages_stay_in_one_line`
 are inferred from the global (:data:`cliasi.cli`) instance if not set (None).
@@ -44,3 +75,60 @@ all other instances will inherit these settings unless you explicitly set them.
     <span style="color: #ffffff; font-weight: bold">i</span> <span style="color: #888888">[FUNC]</span> </span><span>| Info from function
     </pre></div>
     </div>
+
+Common mistakes
+"""""""""""""""""
+Please beware that if you have something like this in one of your files:
+
+.. code-block:: python
+    :caption: database_module.py
+
+    from cliasi import Cliasi
+
+    cli = Cliasi("DB")
+    def initialize_database():
+        pass
+
+And maybe get the verbosity level from some config file / as arguments
+and set the level after importing the module like this:
+
+.. code-block:: python
+    :caption: main_program.py
+
+    from cliasi import cli
+    from database_module import initialize_database
+
+    def main():
+        cli.min_verbose_level = 2  # Only warnings and errors
+        initialize_database()
+
+The Cliasi instance in database **will not infer** the verbosity level from the global instance
+as it is created before the global instance's verbosity level is set.
+
+To avoid this, either set the verbosity level before importing any modules that create their own Cliasi instances
+or create Cliasi instances only in functions / after the global instance's settings have been set.
+
+You can also use the :meth:`~cliasi.cliasi.Cliasi.infer_settings` method to manually infer the settings from the global instance.
+
+Below are fixed versions of the above code snippets:
+
+.. code-block:: python
+    :caption: main_program_fixed.py
+
+    from cliasi import cli
+
+    def main():
+        cli.min_verbose_level = 2  # Only warnings and errors
+        from database_module import initialize_database
+        initialize_database()
+
+.. code-block:: python
+    :caption: database_module_fixed.py
+
+    from cliasi import Cliasi
+
+    cli: Cliasi = Cliasi("DB")
+
+    def initialize_database():
+        cli.infer_settings()
+        pass

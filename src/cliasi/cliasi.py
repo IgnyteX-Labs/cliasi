@@ -65,7 +65,7 @@ class Cliasi:
     def __init__(
         self,
         prefix: str = "",
-            messages_stay_in_one_line: bool | None = None,
+        messages_stay_in_one_line: bool | None = None,
         colors: bool = True,
         min_verbose_level: int | None = None,
         seperator: str = "|",
@@ -117,6 +117,14 @@ class Cliasi:
         self.__space_before_message = (
             3 + len(self.__prefix) + len(self.__prefix_seperator)
         )
+
+    def infer_settings(self) -> None:
+        """
+        Infer settings from the global cli instance.
+
+        """
+        self.min_verbose_level = cli.min_verbose_level
+        self.messages_stay_in_one_line = cli.messages_stay_in_one_line
 
     def set_seperator(self, seperator: str) -> None:
         """
@@ -233,9 +241,10 @@ class Cliasi:
             # Nothing to print
             return None
         # content_space - separating space (needed to separate left, right etc)
-        if (content_space - separating_space) < len(
+        force_multiline = (content_space - separating_space) < len(
             content_total
-        ) or "\n" in content_total:
+        ) or "\n" in content_total
+        if force_multiline:
             # Can't print in one line.
             content_to_split = ""
             if isinstance(message_left, str):
@@ -382,7 +391,9 @@ class Cliasi:
             for line in lines:
                 index += 1
                 is_last = index == len(lines)
-                end_str = ("" if (oneline and is_last) else "\n") + TextColor.RESET
+                end_str = (
+                    "" if (oneline and not force_multiline and is_last) else "\n"
+                ) + TextColor.RESET
 
                 if index == 1:
                     # Printing first / last line
@@ -896,14 +907,28 @@ class Cliasi:
         :param current_animation_frame: Current animation frame to show
         :return: None
         """
-        self.__print(
-            color,
-            current_symbol_frame,
+        base_message = (
             current_animation_frame
             + ("" if current_animation_frame == "" else " ")
             + message_left
             if isinstance(message_left, str)
-            else "",
+            else current_animation_frame
+        )
+        available = max(
+            1,
+            _terminal_size()
+            - (self.__space_before_message + len(current_symbol_frame) + 1),
+        )
+        if len(base_message) > available:
+            if available > 1:
+                base_message = base_message[: available - 1] + "…"
+            else:
+                base_message = base_message[:available]
+
+        self.__print(
+            color,
+            current_symbol_frame,
+            base_message,
             True,
             message_center=message_center,
             message_right=message_right,
@@ -1541,7 +1566,7 @@ class Cliasi:
         interval: int | float = 0.25,
         unicorn: bool = False,
         messages_stay_in_one_line: bool | None = None,
-    ) -> NonBlockingAnimationTask | None:
+    ) -> NonBlockingAnimationTask:
         """
         Display a loading animation in the background
         Stop animation by calling .stop() on the returned object
@@ -1598,7 +1623,7 @@ class Cliasi:
         interval: int | float = 0.25,
         unicorn: bool = False,
         messages_stay_in_one_line: bool | None = True,
-    ) -> NonBlockingAnimationTask | None:
+    ) -> NonBlockingAnimationTask:
         """
         Display a downloading animation in the background
 
