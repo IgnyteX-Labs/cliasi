@@ -70,8 +70,12 @@ Animations and Progress Bars
 ----------------------------
 
 Blocking Animation
-"""""""""""""""""""""
+""""""""""""""""""""""""""""""
 Blocking animations run in the main thread and block further execution until complete.
+
+.. note::
+    Animated messages trim overflowing text to the current terminal width as animations only
+    work when the text is one line long.
 
 .. code-block:: python
     :caption: examples/blocking_animation.py
@@ -128,7 +132,11 @@ Non-Blocking Animation
    </div>
 
 Progress Bars
-""""""""""""""""""
+"""""""""""""""""""""
+
+.. note::
+    Progress bars (animated and static) trim overflowing text to the current terminal width.
+    They work when the text is one line long.
 
 .. code-block:: python
     :caption: examples/progress_bar.py
@@ -157,7 +165,7 @@ Progress Bars
 
 
 Animated Progress Bars
-""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""
 .. code-block:: python
     :caption: examples/animated_progress_bar.py
 

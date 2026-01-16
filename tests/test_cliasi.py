@@ -719,3 +719,49 @@ def test_progressbar_cover_dead_space_with_bar(monkeypatch):
     assert inside_cover[pos_c + 1 : pos_r].strip("=") == ""
     assert inside_spaces[pos_l - 1] == " "
     assert inside_cover[pos_l - 1] == "="
+
+
+def test_oneline_wrapped_message_adds_newline(monkeypatch, capture_streams):
+    out_buf, err_buf = capture_streams
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 20)
+    c = Cliasi("OL", messages_stay_in_one_line=True, colors=False)
+    c.info("A" * 50, messages_stay_in_one_line=True)
+    c.info("next", messages_stay_in_one_line=True)
+    clean = normalize_output(out_buf.getvalue())
+    assert clean.count("i [OL]") >= 2
+    assert "next" in clean
+
+
+def test_oneline_explicit_newline_adds_newline(monkeypatch, capture_streams):
+    out_buf, err_buf = capture_streams
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 40)
+    c = Cliasi("NL2", messages_stay_in_one_line=True, colors=False)
+    c.info("line1\nline2", messages_stay_in_one_line=True)
+    c.info("after", messages_stay_in_one_line=True)
+    clean = normalize_output(out_buf.getvalue())
+    assert clean.count("i [NL2]") >= 2
+    assert "line1" in clean and "line2" in clean and "after" in clean
+
+
+def test_animation_trims_long_message(monkeypatch, capture_streams):
+    out_buf, err_buf = capture_streams
+    from cliasi import cliasi as cliasi_module
+
+    monkeypatch.setattr(cliasi_module, "_terminal_size", lambda: 20)
+    c = Cliasi("ANTRIM", messages_stay_in_one_line=True, colors=False)
+    c._Cliasi__show_animation_frame(
+        "This message is way too long",
+        False,
+        False,
+        constants.TextColor.BRIGHT_CYAN,
+        "#",
+        "anim",
+    )
+    clean = normalize_output(out_buf.getvalue())
+    assert "…" in clean
+    assert "way too long" not in clean
+    assert "anim" in clean
