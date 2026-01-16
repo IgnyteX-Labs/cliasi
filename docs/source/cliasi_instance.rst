@@ -21,6 +21,23 @@ while part B has another instance with a different prefix.
         cli = Cliasi("scope_2")
         cli.warning("Message will be prefixed with [scope_2]")
 
+Instance options
+"""""""""""""""""
+Every cliasi instance has the following parameters / methods:
+
+* :meth:`~cliasi.cliasi.Cliasi.set_prefix()` - to set the prefix for every message from this instance
+* :meth:`~cliasi.cliasi.Cliasi.infer_settings()` - to infer settings like the ones below from the global instance, see :ref:`global_inference`
+* :attr:`~cliasi.cliasi.Cliasi.enable_colors` - whether to use colored output for this instance
+* :attr:`~cliasi.cliasi.Cliasi.max_dead_space` - maximum number of empty space between aligned messages for this instance. See :ref:`max_dead_space`
+* :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` - verbosity level for this instance
+* :attr:`~cliasi.cliasi.Cliasi.messages_stay_in_one_line` - whether messages should stay in one line for this instance
+
+.. note::
+    ``messages_stay_in_one_line`` does not affect progress bars, animations and messages
+    that go over multiple lines due to API limitations.
+
+.. _global_inference:
+
 Global inference
 """""""""""""""""
 :attr:`~cliasi.cliasi.Cliasi.min_verbose_level` **and**
